@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { analizarRutinaConIA } from '@/lib/gemini';
 
+export const maxDuration = 60;
+
 export async function POST(request) {
   try {
     const contentType = request.headers.get('content-type') || '';
@@ -19,11 +21,24 @@ export async function POST(request) {
 
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const mimeType = file.type || 'application/octet-stream';
+      let mimeType = file.type || '';
       const fileName = file.name || '';
 
-      // Si es imagen (JPG, PNG, WEBP, etc.)
-      if (mimeType.startsWith('image/')) {
+      const isImage =
+        mimeType.startsWith('image/') ||
+        /\.(jpg|jpeg|png|webp|heic|bmp|gif)$/i.test(fileName);
+      const isExcel =
+        mimeType.includes('spreadsheet') ||
+        mimeType.includes('excel') ||
+        /\.(xlsx|xls|csv)$/i.test(fileName);
+
+      if (isImage) {
+        if (!mimeType || mimeType === 'application/octet-stream') {
+          if (/\.png$/i.test(fileName)) mimeType = 'image/png';
+          else if (/\.webp$/i.test(fileName)) mimeType = 'image/webp';
+          else mimeType = 'image/jpeg';
+        }
+
         const base64 = buffer.toString('base64');
         const planilla = await analizarRutinaConIA({
           imagenBase64: base64,
@@ -33,18 +48,11 @@ export async function POST(request) {
 
         return NextResponse.json({
           ok: true,
-          mensaje: 'Imagen analizada con éxito por Gemini.',
+          mensaje: planilla.advertencia || 'Imagen analizada con éxito.',
           planilla,
+          advertencia: planilla.advertencia || null,
         });
-      }
-      // Si es Excel o CSV
-      else if (
-        mimeType.includes('spreadsheet') ||
-        mimeType.includes('excel') ||
-        fileName.endsWith('.xlsx') ||
-        fileName.endsWith('.xls') ||
-        fileName.endsWith('.csv')
-      ) {
+      } else if (isExcel) {
         const planilla = await analizarRutinaConIA({
           excelBuffer: buffer,
           nombreArchivo: fileName,
@@ -52,15 +60,16 @@ export async function POST(request) {
 
         return NextResponse.json({
           ok: true,
-          mensaje: 'Archivo Excel analizado con éxito por Gemini.',
+          mensaje: planilla.advertencia || 'Archivo Excel analizado con éxito.',
           planilla,
+          advertencia: planilla.advertencia || null,
         });
       } else {
         return NextResponse.json(
           {
             ok: false,
             error:
-              'Formato de archivo no compatible. Sube una foto (JPG, PNG) o una planilla Excel (.xlsx, .csv).',
+              'Formato de archivo no compatible. Sube una foto (JPG, PNG, WEBP) o una planilla Excel (.xlsx, .csv).',
           },
           { status: 400 }
         );
@@ -86,8 +95,9 @@ export async function POST(request) {
 
     return NextResponse.json({
       ok: true,
-      mensaje: 'Rutina extraída exitosamente con IA.',
+      mensaje: planilla.advertencia || 'Rutina extraída exitosamente.',
       planilla,
+      advertencia: planilla.advertencia || null,
     });
   } catch (error) {
     console.error('Error en /api/ia/analizar-rutina:', error);

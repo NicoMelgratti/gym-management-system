@@ -11,7 +11,9 @@ import {
   AlertCircle,
   Loader2,
   Image as ImageIcon,
+  ArrowRight,
 } from 'lucide-react';
+import { DEFAULT_PLANILLA_FISICA_E22 } from '@/lib/rutinas';
 
 export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }) {
   const [file, setFile] = useState(null);
@@ -19,6 +21,7 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
   const [analyzing, setAnalyzing] = useState(false);
   const [statusStep, setStatusStep] = useState('');
   const [error, setError] = useState('');
+  const [advertencia, setAdvertencia] = useState('');
   const [extractedPlanilla, setExtractedPlanilla] = useState(null);
 
   const fileInputRef = useRef(null);
@@ -31,6 +34,7 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
 
     setFile(selected);
     setError('');
+    setAdvertencia('');
     setExtractedPlanilla(null);
 
     if (selected.type.startsWith('image/')) {
@@ -49,6 +53,7 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
 
     setFile(dropped);
     setError('');
+    setAdvertencia('');
     setExtractedPlanilla(null);
 
     if (dropped.type.startsWith('image/')) {
@@ -68,13 +73,14 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
 
     setAnalyzing(true);
     setError('');
+    setAdvertencia('');
     setStatusStep('Subiendo archivo al servidor...');
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
-      setStatusStep('Google Gemini analizando el contenido y la caligrafía...');
+      setStatusStep('Google Gemini digitalizando y detectando ejercicios...');
 
       const res = await fetch('/api/ia/analizar-rutina', {
         method: 'POST',
@@ -87,7 +93,13 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
         throw new Error(data.error || 'Error al procesar el archivo con Gemini.');
       }
 
-      setStatusStep('¡Estructura validada y convertida a Planilla E22!');
+      if (data.advertencia) {
+        setAdvertencia(data.advertencia);
+        setStatusStep('Estructura E22 cargada para ajustar en el editor');
+      } else {
+        setStatusStep('¡Estructura validada y convertida a Planilla E22!');
+      }
+
       setExtractedPlanilla(data.planilla);
     } catch (err) {
       console.error('Error analizando rutina:', err);
@@ -104,10 +116,23 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
     }
   };
 
+  const handleCargarBase = () => {
+    if (onRoutineExtracted) {
+      onRoutineExtracted({
+        ...DEFAULT_PLANILLA_FISICA_E22,
+        objetivo: file?.name
+          ? `Planilla E22 (Basada en ${file.name})`
+          : DEFAULT_PLANILLA_FISICA_E22.objetivo,
+      });
+      handleCerrar();
+    }
+  };
+
   const handleCerrar = () => {
     setFile(null);
     setPreviewUrl('');
     setError('');
+    setAdvertencia('');
     setStatusStep('');
     setExtractedPlanilla(null);
     onClose();
@@ -143,11 +168,34 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
 
         {/* Cuerpo del Modal */}
         <div className="p-5 space-y-4 overflow-y-auto flex-1">
-          {/* Mensajes de Error */}
+          {/* Mensajes de Error con bypass */}
           {error && (
-            <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl flex items-center gap-2 text-xs text-rose-300 font-mono">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-              <span>{error}</span>
+            <div className="p-3.5 bg-rose-950/40 border border-rose-800/60 rounded-xl space-y-2.5 text-xs text-rose-300 font-mono">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{error}</span>
+              </div>
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-rose-900/40">
+                <span className="text-[11px] text-zinc-400 font-sans">
+                  ¿Deseas abrir la estructura oficial en el editor para redactarla manualmente?
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCargarBase}
+                  className="px-3 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-bold rounded-lg transition shrink-0 flex items-center gap-1.5"
+                >
+                  <span>Abrir en Editor</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Advertencia si la IA usó modo de contingencia */}
+          {advertencia && (
+            <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl flex items-start gap-2.5 text-xs text-amber-300 font-mono">
+              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <span>{advertencia}</span>
             </div>
           )}
 
@@ -200,6 +248,8 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
                   onClick={() => {
                     setFile(null);
                     setPreviewUrl('');
+                    setError('');
+                    setAdvertencia('');
                     setExtractedPlanilla(null);
                   }}
                   className="text-xs text-zinc-500 hover:text-rose-400 font-mono underline"
@@ -245,7 +295,11 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
             <div className="p-4 bg-emerald-950/30 border border-emerald-800/60 rounded-xl space-y-3 animate-fade-in">
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>¡Rutina extraída con éxito por Google Gemini!</span>
+                <span>
+                  {advertencia
+                    ? 'Plantilla E22 lista para editar en el editor'
+                    : '¡Rutina extraída con éxito por Google Gemini!'}
+                </span>
               </div>
 
               <div className="p-3 bg-[#09090b] rounded-lg border border-emerald-900/50 space-y-1.5 text-xs font-mono">
@@ -253,11 +307,22 @@ export default function ScanRoutineModal({ isOpen, onClose, onRoutineExtracted }
                   Objetivo: {extractedPlanilla.objetivo}
                 </p>
                 <div className="flex gap-4 text-zinc-400 text-[11px]">
-                  <span>Días: <strong className="text-white">{extractedPlanilla.dias?.length || 0}</strong></span>
-                  <span>Total Ejercicios: <strong className="text-white">
-                    {extractedPlanilla.dias?.reduce((acc, d) => acc + (d.ejercicios?.length || 0), 0)}
-                  </strong></span>
-                  <span>Etapas: <strong className="text-white">{extractedPlanilla.bloques?.length || 0}</strong></span>
+                  <span>
+                    Días: <strong className="text-white">{extractedPlanilla.dias?.length || 0}</strong>
+                  </span>
+                  <span>
+                    Total Ejercicios:{' '}
+                    <strong className="text-white">
+                      {extractedPlanilla.dias?.reduce(
+                        (acc, d) => acc + (d.ejercicios?.length || 0),
+                        0
+                      )}
+                    </strong>
+                  </span>
+                  <span>
+                    Etapas:{' '}
+                    <strong className="text-white">{extractedPlanilla.bloques?.length || 0}</strong>
+                  </span>
                 </div>
               </div>
             </div>
