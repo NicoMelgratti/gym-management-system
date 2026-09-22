@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { parsePlanillaData, serializePlanillaData } from '@/lib/rutinas';
 
 export async function GET(request, { params }) {
   try {
@@ -16,9 +17,22 @@ export async function GET(request, { params }) {
       [alumnoId]
     );
 
+    if (res.rows.length === 0) {
+      return NextResponse.json({
+        ok: true,
+        rutina: null,
+      });
+    }
+
+    const rutina = res.rows[0];
+    const planillaParsed = parsePlanillaData(rutina.detalles, rutina.titulo);
+
     return NextResponse.json({
       ok: true,
-      rutina: res.rows.length > 0 ? res.rows[0] : null,
+      rutina: {
+        ...rutina,
+        planilla: planillaParsed,
+      },
     });
   } catch (error) {
     console.error('Error en GET rutina:', error);
@@ -31,34 +45,37 @@ export async function POST(request, { params }) {
     const resolvedParams = await params;
     const alumnoId = resolvedParams?.id;
     const body = await request.json();
-    const { titulo, detalles, profesor_id = 1 } = body;
+    const { titulo, detalles, planilla, profesor_id } = body;
 
-    if (!titulo || !detalles) {
+    let serializedDetalles = '';
+    let finalTitulo = titulo || 'Planilla Técnica E22';
+
+    if (planilla && typeof planilla === 'object') {
+      serializedDetalles = serializePlanillaData(planilla);
+      finalTitulo = planilla.objetivo || titulo || 'Planilla Técnica E22';
+    } else if (typeof detalles === 'object') {
+      serializedDetalles = serializePlanillaData(detalles);
+      finalTitulo = detalles.objetivo || titulo || 'Planilla Técnica E22';
+    } else if (typeof detalles === 'string') {
+      serializedDetalles = detalles;
+    }
+
+    if (!serializedDetalles) {
       return NextResponse.json(
         { ok: false, error: 'Título y detalles de la rutina son obligatorios.' },
         { status: 400 }
       );
     }
 
-    // Validar que el profesor_id exista realmente en e22.usuarios (rol_id = 2) o buscar el profesor activo
+    // Validar profesor
     let validProfesorId = null;
     if (profesor_id) {
-      const profCheck = await query(
-        `SELECT id FROM e22.usuarios WHERE id = $1;`,
-        [profesor_id]
-      );
-      if (profCheck.rows.length > 0) {
-        validProfesorId = profCheck.rows[0].id;
-      }
+      const profCheck = await query(`SELECT id FROM e22.usuarios WHERE id = $1;`, [profesor_id]);
+      if (profCheck.rows.length > 0) validProfesorId = profCheck.rows[0].id;
     }
-
     if (!validProfesorId) {
-      const defaultProf = await query(
-        `SELECT id FROM e22.usuarios WHERE rol_id = 2 LIMIT 1;`
-      );
-      if (defaultProf.rows.length > 0) {
-        validProfesorId = defaultProf.rows[0].id;
-      }
+      const defaultProf = await query(`SELECT id FROM e22.usuarios WHERE rol = 'profesor' LIMIT 1;`);
+      if (defaultProf.rows.length > 0) validProfesorId = defaultProf.rows[0].id;
     }
 
     // Verificar si ya existe una rutina para este alumno
@@ -75,7 +92,7 @@ export async function POST(request, { params }) {
          SET titulo = $1, detalles = $2, profesor_id = $3, fecha_actualizacion = CURRENT_TIMESTAMP
          WHERE id = $4
          RETURNING *;`,
-        [titulo, detalles, validProfesorId, rutinaId]
+        [finalTitulo, serializedDetalles, validProfesorId, rutinaId]
       );
       savedRutina = updateRes.rows[0];
     } else {
@@ -83,15 +100,20 @@ export async function POST(request, { params }) {
         `INSERT INTO e22.rutinas (usuario_id, profesor_id, titulo, detalles, fecha_creacion, fecha_actualizacion)
          VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
          RETURNING *;`,
-        [alumnoId, validProfesorId, titulo, detalles]
+        [alumnoId, validProfesorId, finalTitulo, serializedDetalles]
       );
       savedRutina = insertRes.rows[0];
     }
 
+    const parsed = parsePlanillaData(savedRutina.detalles, savedRutina.titulo);
+
     return NextResponse.json({
       ok: true,
       message: 'Rutina guardada y asignada exitosamente.',
-      rutina: savedRutina,
+      rutina: {
+        ...savedRutina,
+        planilla: parsed,
+      },
     });
   } catch (error) {
     console.error('Error en POST /api/alumnos/[id]/rutina:', error);

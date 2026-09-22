@@ -311,73 +311,70 @@ export default function StudentDetailModal({
             </button>
           </div>
 
-          {/* Módulo de Carga de Rutina Predefinida de 6 Días */}
-          <div className="p-5 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          {/* Módulo de Carga de Rutina y Enlace al Editor de Planilla Técnica */}
+          <div className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
               <div className="flex items-center gap-2">
-                <Dumbbell className="w-5 h-5 text-rose-500" />
-                <h3 className="text-base font-black text-white">
-                  Planilla de Entrenamiento Predefinida E22
-                </h3>
+                <Dumbbell className="w-5 h-5 text-white" />
+                <div>
+                  <h3 className="text-base font-black text-white">
+                    Planilla de Entrenamiento E22
+                  </h3>
+                  <p className="text-[11px] text-zinc-400 font-mono">
+                    Protocolo oficial con metas personalizadas, ejercicios libres y periodización.
+                  </p>
+                </div>
               </div>
 
-              {/* Selector de días de la planilla */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] text-slate-400 mr-1">Cargar plantilla para:</span>
-                {[3, 4, 5, 6].map((num) => (
-                  <button
-                    key={num}
-                    type="button"
-                    onClick={() => handleApplyPresetDays(num)}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition ${
-                      diasSeleccionados === num
-                        ? 'bg-rose-600 border-rose-500 text-white shadow'
-                        : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {num} Días
-                  </button>
-                ))}
-              </div>
+              <a
+                href="/dashboard/profesor/rutinas"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black rounded-xl transition shadow"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Abrir en Editor de Planilla Técnica &rarr;</span>
+              </a>
             </div>
 
-            {/* Editor de Título y Ejercicios */}
+            {/* Editor Rápido */}
             <div className="space-y-3">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Título de la Rutina
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                  Título de la Rutina / Objetivo del Cliente
                 </label>
                 <input
                   type="text"
                   value={rutinaTitulo}
                   onChange={(e) => setRutinaTitulo(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-sm text-white focus:outline-none focus:border-white font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Ejercicios por Día (Lunes a Sábado) - El alumno podrá tachar cada ejercicio completado
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                  Ejercicios y Detalles (o usa el Editor de Planilla Técnica para la tabla con bloques)
                 </label>
                 <textarea
                   value={rutinaDetalles}
                   onChange={(e) => setRutinaDetalles(e.target.value)}
-                  rows={10}
-                  className="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-rose-500 resize-none leading-relaxed"
+                  rows={8}
+                  className="w-full p-3.5 bg-zinc-900 border border-zinc-700 rounded-xl text-xs font-mono text-zinc-200 focus:outline-none focus:border-white resize-none leading-relaxed"
                 />
               </div>
             </div>
 
             {/* Guardar Rutina */}
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-between items-center pt-2">
+              <span className="text-[11px] text-zinc-500 font-mono">
+                Para el formato de hoja física con bloques y RIR, utiliza el Editor de Planilla Técnica.
+              </span>
               <button
                 type="button"
                 onClick={handleSaveRoutine}
                 disabled={savingRoutine}
-                className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-rose-600/30 transition disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-black rounded-xl shadow transition disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                {savingRoutine ? 'Guardando...' : 'Guardar y Asignar Rutina en BD'}
+                {savingRoutine ? 'Guardando...' : 'Guardar Rutina Rápida'}
               </button>
             </div>
           </div>

@@ -4,18 +4,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
-import SpringCheck from '@/components/SpringCheck';
+import TrainingSheet from '@/components/TrainingSheet';
+import { parsePlanillaData } from '@/lib/rutinas';
 import { generarRutinaPDF } from '@/lib/pdfGenerator';
 import {
   Dumbbell,
   FileDown,
-  RotateCcw,
   Sparkles,
   Calendar,
   AlertCircle,
   CheckCircle2,
   ArrowLeft,
   RefreshCw,
+  Printer,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 export default function AlumnoRutinaPage() {
@@ -23,8 +26,11 @@ export default function AlumnoRutinaPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const [alumnoData, setAlumnoData] = useState(null);
   const [rutinaData, setRutinaData] = useState(null);
+  const [planilla, setPlanilla] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [tachados, setTachados] = useState({});
+  const [updatingAsistencia, setUpdatingAsistencia] = useState(false);
+  const [themeMode, setThemeMode] = useState('dark'); // 'dark' | 'print'
+  const [statusMsg, setStatusMsg] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('e22_user');
@@ -41,16 +47,6 @@ export default function AlumnoRutinaPage() {
       }
       setCurrentUser(parsed);
       fetchData(parsed.id);
-
-      // Cargar tachados guardados
-      const savedTachados = localStorage.getItem(`e22_tachados_${parsed.id}`);
-      if (savedTachados) {
-        try {
-          setTachados(JSON.parse(savedTachados));
-        } catch (e) {
-          console.error(e);
-        }
-      }
     } catch (e) {
       router.push('/');
     }
@@ -64,6 +60,12 @@ export default function AlumnoRutinaPage() {
       if (data.ok) {
         setAlumnoData(data.socio);
         setRutinaData(data.rutina);
+        if (data.rutina) {
+          const parsed =
+            data.rutina.planilla ||
+            parsePlanillaData(data.rutina.detalles, data.rutina.titulo);
+          setPlanilla(parsed);
+        }
       }
     } catch (err) {
       console.error('Error cargando rutina:', err);
@@ -72,73 +74,58 @@ export default function AlumnoRutinaPage() {
     }
   };
 
+  const handleToggleAsistencia = async (diaNum) => {
+    if (!currentUser?.id || !planilla) return;
+
+    const setDias = new Set(planilla.asistenciaDias || []);
+    const yaAsistio = setDias.has(diaNum);
+    if (yaAsistio) {
+      setDias.delete(diaNum);
+    } else {
+      setDias.add(diaNum);
+    }
+
+    const nuevosDias = Array.from(setDias).sort((a, b) => a - b);
+    const updatedPlanilla = { ...planilla, asistenciaDias: nuevosDias };
+    setPlanilla(updatedPlanilla);
+
+    try {
+      setUpdatingAsistencia(true);
+      const res = await fetch('/api/rutinas', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: currentUser.id,
+          dia: diaNum,
+          asistio: !yaAsistio,
+          asistenciaDias: nuevosDias,
+        }),
+      });
+
+      const resData = await res.json();
+      if (resData.ok) {
+        setStatusMsg(
+          !yaAsistio
+            ? `Día ${diaNum} marcado como entrenado en tu ciclo de 30 días.`
+            : `Día ${diaNum} desmarcado.`
+        );
+        setTimeout(() => setStatusMsg(''), 3000);
+      }
+    } catch (error) {
+      console.error('Error actualizando asistencia:', error);
+    } finally {
+      setUpdatingAsistencia(false);
+    }
+  };
+
   const handleDownloadPDF = () => {
-    if (!alumnoData || !rutinaData) {
-      alert('La rutina aún no está disponible para exportar a PDF.');
+    if (!alumnoData || !planilla) {
+      alert('Tu planilla de entrenamiento aún no está disponible para exportar.');
       return;
     }
-    generarRutinaPDF({ alumno: alumnoData, rutina: rutinaData });
+    generarRutinaPDF({ alumno: alumnoData, rutina: rutinaData, planilla });
   };
 
-  const toggleTacharEjercicio = (key) => {
-    setTachados((prev) => {
-      const updated = { ...prev, [key]: !prev[key] };
-      if (currentUser?.id) {
-        localStorage.setItem(`e22_tachados_${currentUser.id}`, JSON.stringify(updated));
-      }
-      return updated;
-    });
-  };
-
-  const handleResetTachados = () => {
-    if (confirm('¿Deseas reiniciar y desmarcar todos los ejercicios completados?')) {
-      setTachados({});
-      if (currentUser?.id) {
-        localStorage.removeItem(`e22_tachados_${currentUser.id}`);
-      }
-    }
-  };
-
-  // Parser para descomponer el texto de rutina en bloques de días
-  const parseRoutineBlocks = (text) => {
-    if (!text) return [];
-    const lines = text.split('\n');
-    const blocks = [];
-    let currentBlock = null;
-
-    lines.forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-
-      if (
-        trimmed.toLowerCase().startsWith('día') ||
-        trimmed.toLowerCase().startsWith('dia') ||
-        trimmed.toLowerCase().startsWith('notas') ||
-        trimmed.toLowerCase().startsWith('ejercicios asignados')
-      ) {
-        if (currentBlock) blocks.push(currentBlock);
-        currentBlock = {
-          title: trimmed.replace(':', ''),
-          isNotes: trimmed.toLowerCase().startsWith('notas'),
-          items: [],
-        };
-      } else {
-        if (!currentBlock) {
-          currentBlock = {
-            title: 'Ejercicios Principales',
-            isNotes: false,
-            items: [],
-          };
-        }
-        currentBlock.items.push(trimmed.replace(/^[•\-\*]\s*/, ''));
-      }
-    });
-
-    if (currentBlock) blocks.push(currentBlock);
-    return blocks;
-  };
-
-  const routineBlocks = rutinaData ? parseRoutineBlocks(rutinaData.detalles) : [];
   const isAlDia = alumnoData?.estado_pago === 'al_dia';
 
   return (
@@ -162,18 +149,19 @@ export default function AlumnoRutinaPage() {
             <div>
               <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-500 flex items-center gap-1.5 mb-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                TRAINING PROTOCOL // PREDEFINED 6-DAY SHEET
+                OFFICIAL TRAINING SHEET // PLAN PERSONALIZADO E22
               </span>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
-                {rutinaData?.titulo || 'Planilla de Rutina E22'}
+                {planilla?.objetivo || rutinaData?.titulo || 'Planilla de Entrenamiento'}
               </h1>
-              <p className="text-xs text-zinc-500 font-mono mt-0.5">
-                Entrenador Responsable: {rutinaData?.profesor_nombre || 'Staff Entrenadores E22'} • {alumnoData?.dias_asistencia || 6} Días por semana
+              <p className="text-xs text-zinc-400 font-mono mt-0.5">
+                Socio: <strong>{alumnoData?.nombre_completo || currentUser?.nombre}</strong> • Entrenador Responsable: {rutinaData?.profesor_nombre || 'Staff E22 GYM'}
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
               <button
+                type="button"
                 onClick={() => currentUser?.id && fetchData(currentUser.id)}
                 className="p-2 bg-e22-card border border-e22-border hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-xl transition"
                 title="Actualizar datos"
@@ -181,49 +169,74 @@ export default function AlumnoRutinaPage() {
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
 
-              {rutinaData && (
-                <>
-                  <button
-                    onClick={handleResetTachados}
-                    className="flex items-center gap-2 px-3.5 py-2 bg-e22-card hover:bg-zinc-850 text-zinc-300 hover:text-white text-xs font-bold rounded-xl border border-e22-border transition"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reiniciar Tachados</span>
-                  </button>
+              {/* Selector de Tema de Planilla (Oscuro / Impresión Hoja Física) */}
+              <button
+                type="button"
+                onClick={() => setThemeMode(themeMode === 'dark' ? 'print' : 'dark')}
+                className="flex items-center gap-2 px-3.5 py-2 bg-e22-card hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-bold rounded-xl border border-e22-border transition"
+                title="Alternar entre modo oscuro deportivo y estilo hoja física"
+              >
+                {themeMode === 'dark' ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Estilo Hoja Papel</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>Modo Oscuro</span>
+                  </>
+                )}
+              </button>
 
-                  <button
-                    onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black rounded-xl transition shadow"
-                  >
-                    <FileDown className="w-4 h-4" />
-                    <span>Descargar PDF</span>
-                  </button>
-                </>
+              {planilla && (
+                <button
+                  type="button"
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black rounded-xl transition shadow"
+                >
+                  <FileDown className="w-4 h-4" />
+                  <span>Descargar PDF Oficial</span>
+                </button>
               )}
             </div>
           </div>
         </div>
 
+        {/* Notificación de Asistencia */}
+        {statusMsg && (
+          <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl flex items-center gap-2.5 text-xs text-emerald-300 font-mono">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{statusMsg}</span>
+          </div>
+        )}
+
         {/* Notificación de Modo de Uso */}
-        <div className="p-3.5 bg-e22-card border border-e22-border rounded-xl flex items-center justify-between text-xs text-zinc-400">
+        <div className="p-3.5 bg-e22-card border border-e22-border rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-400">
           <div className="flex items-center gap-2.5">
             <Sparkles className="w-4 h-4 text-white shrink-0" />
             <span>
-              <strong>Modo Interactivo:</strong> Toca cualquier ejercicio para tacharlo al completarlo en el gimnasio. Los tachados se guardan automáticamente en tu dispositivo.
+              <strong>Planilla Técnica Oficial:</strong> Esta es tu planificación personalizada cargada por tu entrenador. Utiliza la grilla de 30 días al pie de la tabla para registrar cada sesión que completes en la sala.
             </span>
           </div>
+          <Link
+            href="/dashboard/alumno/progreso"
+            className="text-white hover:underline font-mono text-[11px] whitespace-nowrap"
+          >
+            Registrar Cargas Semanales (PRs) &rarr;
+          </Link>
         </div>
 
-        {/* Contenido de la rutina */}
-        {!rutinaData ? (
+        {/* Contenido de la Planilla */}
+        {!planilla ? (
           <div className="p-16 text-center bg-e22-card border border-e22-border rounded-2xl space-y-4 max-w-xl mx-auto">
             <Dumbbell className="w-12 h-12 text-zinc-600 mx-auto" />
             <div className="space-y-1">
-              <h3 className="text-lg font-black text-white">Rutina en Preparación</h3>
+              <h3 className="text-lg font-black text-white">Planilla en Preparación</h3>
               <p className="text-xs text-zinc-400 leading-relaxed font-mono">
                 {isAlDia
-                  ? 'Tu profesor de E22 está configurando tu planilla en el Routine Studio. Aparecerá aquí en breve.'
-                  : 'Tu profesor te cargará la rutina predefinida una vez que verifique tu comprobante de pago.'}
+                  ? 'Tu profesor de E22 está redactando tu planilla de ejercicios personalizada. En cuanto la guarde, aparecerá aquí automáticamente.'
+                  : 'Tu profesor te cargará tu planilla técnica personalizada una vez que verifique tu comprobante de pago.'}
               </p>
             </div>
             {!isAlDia && (
@@ -236,86 +249,46 @@ export default function AlumnoRutinaPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {routineBlocks.map((block, bIdx) => (
-              <div
-                key={bIdx}
-                className={`flex flex-col rounded-2xl border p-5 transition ${
-                  block.isNotes
-                    ? 'bg-zinc-900/70 border-zinc-700 md:col-span-2 lg:col-span-3'
-                    : 'bg-e22-card border-e22-border hover:border-zinc-600'
-                }`}
-              >
-                {/* Cabecera del bloque */}
-                <div className="flex items-center justify-between pb-3 border-b border-e22-border/60 mb-3.5">
-                  <h4
-                    className={`font-black text-xs uppercase tracking-wider ${
-                      block.isNotes ? 'text-amber-400' : 'text-white'
-                    }`}
-                  >
-                    {block.title}
-                  </h4>
-                  <span className="text-[10px] font-mono px-2 py-0.5 bg-zinc-800/80 rounded text-zinc-400 border border-zinc-700">
-                    {block.items.length} {block.isNotes ? 'pautas' : 'ejercicios'}
-                  </span>
-                </div>
+          <div className="space-y-6">
+            {/* Render de la Planilla Técnica con componente TrainingSheet */}
+            <TrainingSheet
+              planilla={planilla}
+              alumnoNombre={alumnoData?.nombre_completo || currentUser?.nombre}
+              isInteractive={true}
+              onToggleAsistencia={handleToggleAsistencia}
+              theme={themeMode}
+            />
 
-                {/* Lista de ejercicios con SpringCheck */}
-                <ul className="space-y-1.5 flex-1">
-                  {block.items.map((item, iIdx) => {
-                    const itemKey = `${bIdx}-${iIdx}`;
-                    const isTachado = !!tachados[itemKey];
-
-                    if (block.isNotes) {
-                      return (
-                        <li key={iIdx} className="text-xs text-zinc-300 leading-relaxed py-1 font-mono">
-                          • {item}
-                        </li>
-                      );
-                    }
-
-                    let mainText = item;
-                    let noteText = '';
-                    const match = item.match(/^(.*?)\[Máquina\/Equipo:\s*(.*?)\]$/);
-                    if (match) {
-                      mainText = match[1].trim();
-                      noteText = match[2].trim();
-                    }
-
-                    return (
-                      <li key={iIdx} className="w-full">
-                        <div className="w-full py-1.5 px-2 rounded-xl hover:bg-zinc-900/60 transition-colors">
-                          <SpringCheck
-                            label={mainText}
-                            checked={isTachado}
-                            onChange={() => toggleTacharEjercicio(itemKey)}
-                            color="#ffffff"
-                            fillColor="#ffffff"
-                            checkColor="#09090b"
-                            boxSize={22}
-                            boxRadius={7}
-                            fontSize={13}
-                            bounce={0.25}
-                            strikeLag={0.08}
-                            doneOpacity={0.35}
-                            strike="left"
-                            className="w-full justify-start cursor-pointer"
-                          />
-                          {noteText && (
-                            <div className="ml-8 mt-1 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-zinc-600 shrink-0" />
-                              <span className="text-zinc-300">
-                                <strong className="text-zinc-400">Máquina / Notas:</strong> {noteText}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+            {/* Ficha médica y notas al pie */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-e22-card border border-e22-border rounded-xl space-y-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block">
+                  Ficha Médica & Restricciones
+                </span>
+                <p className="text-xs text-zinc-300 font-mono">
+                  Alergias: <strong className="text-white">{alumnoData?.alergias || 'Ninguna'}</strong>
+                </p>
+                <p className="text-xs text-zinc-300 font-mono">
+                  Patologías / Lesiones:{' '}
+                  <strong className="text-rose-400">{alumnoData?.patologias || 'Ninguna'}</strong>
+                </p>
               </div>
-            ))}
+
+              <div className="p-4 bg-e22-card border border-e22-border rounded-xl space-y-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block">
+                  Metas y Cumplimiento
+                </span>
+                <p className="text-xs text-zinc-300 font-mono">
+                  Sesiones completadas en el ciclo de 30 días:{' '}
+                  <strong className="text-emerald-400">
+                    {planilla.asistenciaDias?.length || 0} de 30 días
+                  </strong>
+                </p>
+                <p className="text-[11px] text-zinc-400 font-mono">
+                  Recuerda respetar los tiempos de descanso y consultar con tu entrenador de sala ante dudas de ejecución.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </main>

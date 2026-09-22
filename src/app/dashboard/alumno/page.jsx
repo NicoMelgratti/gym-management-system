@@ -278,19 +278,38 @@ export default function AlumnoDashboardPage() {
 
             {rutinaData ? (
               <div className="space-y-3">
-                <div className="p-3 bg-e22-bg border border-e22-border rounded-xl">
-                  <pre className="text-xs font-mono text-zinc-300 whitespace-pre-wrap leading-relaxed line-clamp-6">
-                    {rutinaData.detalles}
-                  </pre>
+                <div className="p-3.5 bg-e22-bg border border-e22-border rounded-xl space-y-2">
+                  <span className="text-[10px] font-mono tracking-wider text-emerald-400 font-bold uppercase block">
+                    • Planilla Oficial Activa
+                  </span>
+                  <p className="text-xs font-bold text-white leading-snug">
+                    {rutinaData.planilla?.objetivo || rutinaData.titulo}
+                  </p>
+                  <div className="flex items-center gap-4 text-[11px] text-zinc-400 font-mono pt-1">
+                    <span>
+                      Días: <strong className="text-white">{rutinaData.planilla?.dias?.length || 3} días</strong>
+                    </span>
+                    <span>
+                      Asistencia:{' '}
+                      <strong className="text-emerald-400">
+                        {rutinaData.planilla?.asistenciaDias?.length || 0} / 30 días
+                      </strong>
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
-                  <span>Actualizada: {rutinaData.fecha_actualizacion ? new Date(rutinaData.fecha_actualizacion).toLocaleDateString() : 'Recientemente'}</span>
+                  <span>
+                    Actualizada:{' '}
+                    {rutinaData.fecha_actualizacion
+                      ? new Date(rutinaData.fecha_actualizacion).toLocaleDateString()
+                      : 'Recientemente'}
+                  </span>
                   <Link
                     href="/dashboard/alumno/rutina"
                     className="text-white font-bold hover:underline"
                   >
-                    Tachar ejercicios completados &rarr;
+                    Abrir planilla interactiva &rarr;
                   </Link>
                 </div>
               </div>

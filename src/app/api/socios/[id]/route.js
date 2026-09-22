@@ -60,10 +60,19 @@ export async function GET(request, { params }) {
       [socioId]
     );
 
+    let rutinaFinal = null;
+    if (rutinaRes.rows.length > 0) {
+      const rawRutina = rutinaRes.rows[0];
+      rutinaFinal = {
+        ...rawRutina,
+        planilla: parsePlanillaData(rawRutina.detalles, rawRutina.titulo),
+      };
+    }
+
     return NextResponse.json({
       ok: true,
       socio,
-      rutina: rutinaRes.rows.length > 0 ? rutinaRes.rows[0] : null,
+      rutina: rutinaFinal,
       registros_peso: pesoRes.rows,
       pagos: pagosRes.rows,
     });

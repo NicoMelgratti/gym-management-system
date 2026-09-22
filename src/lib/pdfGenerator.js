@@ -1,17 +1,26 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { parsePlanillaData } from './rutinas';
 
 /**
- * Genera y descarga un PDF estilizado con la rutina de entrenamiento del alumno en E22 Gym.
+ * Genera y descarga un PDF con la Planilla Técnica Oficial de E22 Gym.
+ * Replica de forma exacta la hoja física de planificación de cargas y periodización.
  */
-export function generarRutinaPDF({ alumno, rutina }) {
-  if (!alumno || !rutina) {
-    alert('No hay información suficiente para exportar la rutina.');
+export function generarRutinaPDF({ alumno, rutina, planilla: planillaArg }) {
+  if (!alumno) {
+    alert('No hay información suficiente del alumno para exportar.');
     return;
   }
 
+  const planilla =
+    planillaArg ||
+    (rutina?.planilla
+      ? rutina.planilla
+      : parsePlanillaData(rutina?.detalles, rutina?.titulo));
+
+  // Usamos orientación horizontal (landscape) para que las 4 etapas entren con total nitidez y legibilidad
   const doc = new jsPDF({
-    orientation: 'portrait',
+    orientation: 'landscape',
     unit: 'mm',
     format: 'a4',
   });
@@ -19,157 +28,195 @@ export function generarRutinaPDF({ alumno, rutina }) {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
-  // 1. ENCABEZADO SUPERIOR (Fondo Oscuro Deportivo E22)
-  doc.setFillColor(9, 9, 11); // slate-950
-  doc.rect(0, 0, pageWidth, 40, 'F');
+  const alumnoNombre = (alumno.nombre_completo || `${alumno.nombre} ${alumno.apellido || ''}`).trim();
+  const planNumero = planilla.planNumero || '1';
+  const objetivo = planilla.objetivo || 'Variación de cargas múltiples – OBJETIVO: Desarrollo de Fuerza';
+  const indicacionPrevia =
+    planilla.indicacionPrevia ||
+    'PREVIAMENTE REALIZAR EJERCICIOS DE LA TABLA DE "CORE/MOVILIDAD/ESTABILIDAD" PARA LUEGO COMENZAR CON EL DIA CORRESPONDIENTE';
+  const bloques = planilla.bloques || [];
+  const dias = planilla.dias || [];
+  const asistenciaSet = new Set((planilla.asistenciaDias || []).map(Number));
 
-  // Franja decorativa color blanco/zinc E22
-  doc.setFillColor(255, 255, 255); // blanco
-  doc.rect(0, 38, pageWidth, 1.5, 'F');
+  // 1. FRANJA SUPERIOR: PLAN Nº X - NOMBRE DEL ALUMNO
+  doc.setFillColor(39, 39, 42); // zinc-800
+  doc.rect(10, 10, pageWidth - 20, 8, 'F');
 
-  // Nombre del Gimnasio
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(24);
+  doc.setFontSize(11);
   doc.setTextColor(255, 255, 255);
-  doc.text('E22 GYM', 14, 18);
+  doc.text(
+    `PLAN Nº ${planNumero} – ${alumnoNombre.toUpperCase()}`,
+    pageWidth / 2,
+    15.5,
+    { align: 'center' }
+  );
 
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(203, 213, 225); // slate-300
-  doc.text('CENTRO DE ALTO RENDIMIENTO & FITNESS', 14, 25);
-  doc.text('PLANILLA OFICIAL DE ENTRENAMIENTO (6 DÍAS)', 14, 32);
-
-  // Fecha de emisión
-  const fechaHoy = new Date().toLocaleDateString('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-  doc.setFontSize(9);
-  doc.setTextColor(148, 163, 184);
-  doc.text(`Fecha de Emisión: ${fechaHoy}`, pageWidth - 14, 20, { align: 'right' });
-  doc.text(`Vencimiento Membresía: ${alumno.vencimiento_cuota || 'Al día'}`, pageWidth - 14, 26, { align: 'right' });
-  doc.text(`Días de entrenamiento: ${alumno.dias_asistencia || 6} días/sem`, pageWidth - 14, 32, { align: 'right' });
-
-  // 2. TARJETA DE DATOS DEL ALUMNO Y FICHA MÉDICA
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(14, 47, pageWidth - 28, 30, 3, 3, 'FD');
+  // 2. FRANJA SUBTÍTULO / OBJETIVO
+  doc.setFillColor(228, 228, 231); // zinc-200
+  doc.rect(10, 18, pageWidth - 20, 7, 'F');
+  doc.setDrawColor(161, 161, 170); // zinc-400
+  doc.rect(10, 18, pageWidth - 20, 7, 'S');
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
-  doc.setTextColor(30, 41, 59);
-  doc.text('SOCIO:', 20, 55);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${alumno.nombre_completo || alumno.nombre} (DNI: ${alumno.dni})`, 38, 55);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('TELÉFONO:', 20, 63);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${alumno.telefono || 'Sin registrar'}`, 42, 63);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('ALERTAS:', 20, 71);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(185, 28, 28); // rojo alerta
-  const alertaTexto = `Alergias: ${alumno.alergias || 'Ninguna'} | Patologías: ${alumno.patologias || 'Ninguna'}`;
-  doc.text(doc.splitTextToSize(alertaTexto, pageWidth - 60), 38, 71);
-
-  doc.setTextColor(30, 41, 59);
-  doc.setFont('helvetica', 'bold');
-  doc.text('ENTRENADOR:', pageWidth / 2 + 15, 55);
-  doc.setFont('helvetica', 'normal');
-  doc.text(rutina.profesor_nombre || 'Staff E22', pageWidth / 2 + 45, 55);
-
-  // 3. TÍTULO DE LA PLANILLA
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
   doc.setTextColor(24, 24, 27);
-  doc.text(rutina.titulo || 'Planilla de Rutina E22 (Lunes a Sábado)', 14, 85);
+  doc.text(objetivo, pageWidth / 2, 22.8, { align: 'center' });
 
-  // 4. TABLA DE EJERCICIOS
-  const lineas = (rutina.detalles || '').split('\n');
-  const tableRows = [];
+  // 3. FRANJA DE CALENTAMIENTO PREVIO
+  doc.setFillColor(244, 244, 245); // zinc-100
+  doc.rect(10, 25, pageWidth - 20, 6, 'F');
+  doc.rect(10, 25, pageWidth - 20, 6, 'S');
 
-  lineas.forEach((linea) => {
-    const trimmed = linea.trim();
-    if (!trimmed) return;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(63, 63, 70);
+  doc.text(indicacionPrevia, pageWidth / 2, 29.2, { align: 'center' });
 
-    if (
-      trimmed.toLowerCase().startsWith('día') ||
-      trimmed.toLowerCase().startsWith('dia') ||
-      trimmed.toLowerCase().startsWith('notas')
-    ) {
-      tableRows.push([
-        {
-          content: trimmed.replace(':', ''),
-          colSpan: 3,
-          styles: {
-            fillColor: [24, 24, 27],
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 9,
-          },
-        },
-      ]);
+  // 4. PREPARAR CABECERAS Y FILAS DE LA TABLA
+  const head = [
+    [
+      { content: 'D', rowSpan: 2, styles: { halign: 'center', valign: 'middle', fontStyle: 'bold' } },
+      { content: 'EJERCICIOS', rowSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold' } },
+      ...bloques.map((b) => ({
+        content: `${b.fecha}   |   ${b.rir}`,
+        colSpan: 3,
+        styles: { halign: 'center', fontStyle: 'bold', fillColor: [220, 220, 225] },
+      })),
+    ],
+    [
+      ...bloques.flatMap(() => [
+        { content: 'Kg.', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: 'R', styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: 'S', styles: { halign: 'center', fontStyle: 'bold' } },
+      ]),
+    ],
+  ];
+
+  const body = [];
+
+  dias.forEach((diaObj) => {
+    const cant = Math.max(1, diaObj.ejercicios?.length || 0);
+
+    if (diaObj.ejercicios && diaObj.ejercicios.length > 0) {
+      diaObj.ejercicios.forEach((ex, exIdx) => {
+        const row = [];
+
+        if (exIdx === 0) {
+          row.push({
+            content: String(diaObj.dia),
+            rowSpan: cant,
+            styles: { halign: 'center', valign: 'middle', fontStyle: 'bold', fillColor: [248, 248, 250] },
+          });
+        }
+
+        row.push({ content: ex.nombre || '', styles: { halign: 'left', fontStyle: 'normal' } });
+
+        bloques.forEach((_, bIdx) => {
+          const val = ex.valores?.[bIdx] || { kg: '', r: '', s: '' };
+          row.push({ content: val.kg || '', styles: { halign: 'center' } });
+          row.push({ content: String(val.r || ''), styles: { halign: 'center', fontStyle: 'bold' } });
+          row.push({ content: String(val.s || ''), styles: { halign: 'center', fontStyle: 'bold' } });
+        });
+
+        body.push(row);
+      });
     } else {
-      let ejercicio = trimmed.replace(/^[•\-\*]\s*/, '');
-      let seriesReps = '-';
-      let check = '[  ] Realizado';
-
-      if (ejercicio.includes(':')) {
-        const partes = ejercicio.split(':');
-        ejercicio = partes[0].trim();
-        seriesReps = partes.slice(1).join(':').trim();
-      }
-
-      tableRows.push([ejercicio, seriesReps, check]);
+      body.push([
+        { content: String(diaObj.dia), styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: 'Sin ejercicios cargados', styles: { fontStyle: 'italic' } },
+        ...bloques.flatMap(() => ['', '', '']),
+      ]);
     }
   });
 
-  if (tableRows.length === 0) {
-    tableRows.push([rutina.detalles, '', '']);
+  // Generar tabla con autoTable
+  autoTable(doc, {
+    startY: 32,
+    head: head,
+    body: body,
+    margin: { left: 10, right: 10 },
+    theme: 'grid',
+    styles: {
+      fontSize: 7.5,
+      cellPadding: 1.5,
+      lineColor: [161, 161, 170],
+      lineWidth: 0.2,
+      textColor: [24, 24, 27],
+    },
+    headStyles: {
+      fillColor: [240, 240, 242],
+      textColor: [24, 24, 27],
+      fontStyle: 'bold',
+      lineColor: [161, 161, 170],
+      lineWidth: 0.2,
+    },
+    columnStyles: {
+      0: { cellWidth: 10 }, // D
+      1: { cellWidth: 'auto' }, // EJERCICIOS
+    },
+  });
+
+  const finalY = doc.lastAutoTable.finalY || 140;
+
+  // 5. GRILLA DE 30 DÍAS DE ASISTENCIA EN LA ESQUINA INFERIOR DERECHA (Idéntica a la foto)
+  const boxWidth = 9;
+  const boxHeight = 6;
+  const gridTotalWidth = boxWidth * 15;
+  const gridStartX = pageWidth - 10 - gridTotalWidth;
+  const gridStartY = Math.min(finalY + 4, pageHeight - 22);
+
+  // Marco exterior
+  doc.setDrawColor(113, 113, 122);
+  doc.setLineWidth(0.3);
+
+  // Fila 1: 1 al 15
+  for (let i = 1; i <= 15; i++) {
+    const x = gridStartX + (i - 1) * boxWidth;
+    const y = gridStartY;
+
+    if (asistenciaSet.has(i)) {
+      doc.setFillColor(161, 161, 170); // sombreado como en la foto
+      doc.rect(x, y, boxWidth, boxHeight, 'FD');
+    } else {
+      doc.rect(x, y, boxWidth, boxHeight, 'S');
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(24, 24, 27);
+    doc.text(String(i), x + boxWidth / 2, y + 4.2, { align: 'center' });
   }
 
-  autoTable(doc, {
-    startY: 90,
-    head: [['Ejercicio / Movimiento', 'Series x Repeticiones', 'Control Diario']],
-    body: tableRows,
-    theme: 'grid',
-    headStyles: {
-      fillColor: [24, 24, 27],
-      textColor: [255, 255, 255],
-      fontStyle: 'bold',
-      fontSize: 8.5,
-    },
-    bodyStyles: {
-      fontSize: 8.5,
-      textColor: [51, 65, 85],
-    },
-    alternateRowStyles: {
-      fillColor: [248, 250, 252],
-    },
-    margin: { left: 14, right: 14 },
-    styles: {
-      cellPadding: 2.5,
-      overflow: 'linebreak',
-    },
-  });
+  // Fila 2: 16 al 30
+  for (let i = 16; i <= 30; i++) {
+    const x = gridStartX + (i - 16) * boxWidth;
+    const y = gridStartY + boxHeight;
 
-  // 5. PIE DE PÁGINA
-  const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 12 : pageHeight - 20;
-  const footerY = Math.min(finalY, pageHeight - 15);
+    if (asistenciaSet.has(i)) {
+      doc.setFillColor(161, 161, 170); // sombreado como en la foto
+      doc.rect(x, y, boxWidth, boxHeight, 'FD');
+    } else {
+      doc.rect(x, y, boxWidth, boxHeight, 'S');
+    }
 
-  doc.setDrawColor(226, 232, 240);
-  doc.line(14, footerY - 4, pageWidth - 14, footerY - 4);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(24, 24, 27);
+    doc.text(String(i), x + boxWidth / 2, y + 4.2, { align: 'center' });
+  }
 
-  doc.setFontSize(8);
+  // Nota de pie a la izquierda
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 116, 139);
-  doc.text('E22 GYM • Centro de Entrenamiento • Calidad, Fuerza y Rendimiento', pageWidth / 2, footerY, {
-    align: 'center',
-  });
+  doc.setFontSize(7.5);
+  doc.setTextColor(113, 113, 122);
+  doc.text(
+    `E22 GYM — Centro de Alto Rendimiento • Socio DNI: ${alumno.dni || ''} • Emisión: ${new Date().toLocaleDateString('es-AR')}`,
+    10,
+    gridStartY + 8
+  );
 
-  const nombreArchivo = `Rutina_${(alumno.nombre_completo || alumno.nombre).replace(/\s+/g, '_')}_E22.pdf`;
-  doc.save(nombreArchivo);
+  // Descargar archivo PDF
+  const filename = `Planilla_E22_Plan${planNumero}_${alumnoNombre.replace(/\s+/g, '_')}.pdf`;
+  doc.save(filename);
 }
