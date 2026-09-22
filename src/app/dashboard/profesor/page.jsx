@@ -472,7 +472,7 @@ export default function ProfessorDashboardPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
         {/* Cabecera Principal */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-e22-border/80 pb-5">
           <div>
@@ -717,7 +717,7 @@ export default function ProfessorDashboardPage() {
           </div>
 
           {/* ESTUDIO DE RUTINAS EN ESPAÑOL DIVIDIDO EN DÍAS (HASTA 6 MÁXIMO) */}
-          <div className="lg:col-span-7 bg-e22-card border border-e22-border rounded-2xl p-6 space-y-5">
+          <div className="lg:col-span-7 bg-e22-card border border-e22-border rounded-2xl p-4 sm:p-6 space-y-5 w-full min-w-0">
             {/* Cabecera del Editor */}
             <div className="flex justify-between items-center border-b border-e22-border/60 pb-3">
               <div>

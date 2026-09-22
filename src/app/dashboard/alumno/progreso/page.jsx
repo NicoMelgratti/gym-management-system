@@ -167,7 +167,7 @@ export default function AlumnoProgresoPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
         {/* Cabecera */}
         <div className="space-y-3 border-b border-e22-border/80 pb-5">
           <Link
@@ -184,7 +184,7 @@ export default function AlumnoProgresoPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 STRENGTH &amp; LOAD PROGRESSION // WEEK OVER WEEK
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
+              <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white uppercase">
                 REGISTRO SEMANAL DE CARGAS
               </h1>
               <p className="text-xs text-zinc-500 font-mono mt-0.5">
@@ -207,7 +207,7 @@ export default function AlumnoProgresoPage() {
           {/* Formulario de Carga */}
           <form
             onSubmit={handleGuardarCarga}
-            className="lg:col-span-7 bg-e22-card border border-e22-border rounded-2xl p-6 space-y-4 shadow-sm"
+            className="lg:col-span-7 bg-e22-card border border-e22-border rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm w-full min-w-0"
           >
             <div className="flex items-center justify-between border-b border-e22-border/60 pb-3">
               <div className="flex items-center gap-2">
@@ -259,7 +259,7 @@ export default function AlumnoProgresoPage() {
             </div>
 
             {/* Inputs: Peso, Reps, Semana */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
                   Peso (KG) *

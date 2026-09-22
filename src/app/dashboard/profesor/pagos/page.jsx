@@ -96,7 +96,7 @@ export default function ProfesorPagosPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
         {/* Cabecera */}
         <div className="space-y-3 border-b border-e22-border/80 pb-5">
           <Link
@@ -104,16 +104,16 @@ export default function ProfesorPagosPage() {
             className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-white transition font-mono"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver a Member Roster</span>
+            <span>Volver a Lista de Socios</span>
           </Link>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-500 flex items-center gap-1.5 mb-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                PAYMENT VALIDATION QUEUE // 30-DAY SUBSCRIPTION ENABLER
+                VERIFICACIÓN DE TRANSFERENCIAS // CICLO DE 30 DÍAS
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
+              <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white uppercase">
                 COLA DE VERIFICACIÓN DE PAGOS
               </h1>
               <p className="text-xs text-zinc-500 font-mono mt-0.5">
@@ -123,7 +123,7 @@ export default function ProfesorPagosPage() {
 
             <button
               onClick={loadPagos}
-              className="p-2 bg-e22-card border border-e22-border hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-xl transition"
+              className="p-2 bg-e22-card border border-e22-border hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-xl transition self-start sm:self-auto"
               title="Actualizar"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -140,8 +140,8 @@ export default function ProfesorPagosPage() {
         )}
 
         {/* Filtros y Buscador */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-e22-card border border-e22-border rounded-xl p-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-e22-card border border-e22-border rounded-xl p-3 w-full min-w-0">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             <button
               onClick={() => setFilter('pendiente')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${

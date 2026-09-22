@@ -124,8 +124,24 @@ export default function AccessPortalPage() {
 
   return (
     <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col lg:flex-row font-sans selection:bg-white selection:text-black">
-      {/* 1. BARRA LATERAL IZQUIERDA (Estilo Mockup media_1790081312613.png) */}
-      <aside className="w-full lg:w-60 bg-e22-surface border-b lg:border-b-0 lg:border-r border-e22-border flex flex-col justify-between shrink-0 p-5">
+      {/* Barra superior visible solo en móvil */}
+      <div className="lg:hidden p-4 border-b border-e22-border flex items-center justify-between bg-e22-surface">
+        <div className="flex items-center gap-3">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-black border border-zinc-700 shrink-0">
+            <Image src="/logo.png" alt="E22 Logo" fill className="object-cover" priority />
+          </div>
+          <div>
+            <span className="text-sm font-black tracking-widest text-white block leading-none">E22 GYM</span>
+            <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block mt-0.5">ELITE CORE</span>
+          </div>
+        </div>
+        <span className="text-[10px] font-mono text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-700">
+          PORTAL OFICIAL
+        </span>
+      </div>
+
+      {/* 1. BARRA LATERAL IZQUIERDA (Escritorio >= lg) */}
+      <aside className="hidden lg:flex w-60 bg-e22-surface border-r border-e22-border flex-col justify-between shrink-0 p-5">
         <div className="space-y-6">
           {/* Logo E22 */}
           <div className="flex items-center gap-3">
@@ -140,7 +156,7 @@ export default function AccessPortalPage() {
             <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search records..."
+              placeholder="Buscar registros..."
               className="w-full bg-e22-bg border border-e22-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
             />
           </div>
@@ -160,7 +176,7 @@ export default function AccessPortalPage() {
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-e22-card transition"
             >
               <Users className="w-4 h-4" />
-              <span>Members</span>
+              <span>Socios</span>
             </button>
             <button
               type="button"
@@ -168,21 +184,23 @@ export default function AccessPortalPage() {
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-e22-card transition"
             >
               <Dumbbell className="w-4 h-4" />
-              <span>Trainers</span>
+              <span>Entrenadores</span>
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab('signin')}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-e22-card transition"
             >
               <Calendar className="w-4 h-4" />
-              <span>Schedule</span>
+              <span>Horarios</span>
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab('signin')}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-e22-card transition"
             >
               <BarChart3 className="w-4 h-4" />
-              <span>Analytics</span>
+              <span>Estadísticas</span>
             </button>
           </nav>
         </div>
@@ -192,50 +210,50 @@ export default function AccessPortalPage() {
         </div>
       </aside>
 
-      {/* 2. ÁREA CENTRAL HERO + FORMULARIO DERECHA (Grid Split idéntico al mockup) */}
-      <main className="flex-1 flex flex-col lg:flex-row items-center justify-between p-6 sm:p-12 lg:p-16 gap-12 max-w-7xl mx-auto w-full">
+      {/* 2. ÁREA CENTRAL HERO + FORMULARIO DERECHA */}
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-between p-4 sm:p-8 lg:p-12 gap-8 lg:gap-12 max-w-7xl mx-auto w-full">
         {/* HERO IZQUIERDA */}
-        <div className="flex-1 space-y-8 max-w-xl">
+        <div className="flex-1 space-y-6 lg:space-y-8 max-w-xl text-center lg:text-left">
           <div className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest text-zinc-400 bg-e22-surface px-3 py-1.5 rounded-md border border-e22-border">
             <span className="w-2 h-2 rounded-full bg-white" />
-            SECURE ACCESS PORTAL // 01
+            PORTAL SEGURO // 01
           </div>
 
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-white">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-white">
               E22 GYM
             </h1>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-zinc-500">
-              UNLOCK YOUR
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-zinc-500">
+              ALCANZA TU
             </h2>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-white">
-              PEAK
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[0.95] text-white">
+              MÁXIMO NIVEL
             </h2>
           </div>
 
-          <p className="text-sm text-zinc-400 leading-relaxed font-normal max-w-lg">
-            Uncompromising quality. Zero distractions. Enter the private concrete sanctuary designed for elite athletes and minimalists who demand absolute physical precision.
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-normal max-w-lg mx-auto lg:mx-0">
+            Máxima calidad. Cero distracciones. Entra al santuario de entrenamiento privado diseñado para atletas que exigen precisión y disciplina física absoluta.
           </p>
 
           {/* Estadísticas de pie */}
-          <div className="grid grid-cols-3 gap-6 pt-6 border-t border-e22-border/60">
+          <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-4 sm:pt-6 border-t border-e22-border/60">
             <div>
-              <p className="text-xl sm:text-2xl font-black text-white tracking-tight">24/7</p>
-              <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-1">Private Access</p>
+              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">24/7</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Acceso</p>
             </div>
             <div>
-              <p className="text-xl sm:text-2xl font-black text-white tracking-tight">0%</p>
-              <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-1">Distractions</p>
+              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">0%</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Distracciones</p>
             </div>
             <div>
-              <p className="text-xl sm:text-2xl font-black text-white tracking-tight">100%</p>
-              <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-1">Elite Focus</p>
+              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">100%</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Enfoque Elite</p>
             </div>
           </div>
         </div>
 
         {/* 3. TARJETA DE ACCESO / REGISTRO DERECHA */}
-        <div className="w-full max-w-md bg-e22-card border border-e22-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="w-full max-w-md bg-e22-card border border-e22-border rounded-2xl p-4 sm:p-7 shadow-2xl space-y-5">
           {/* Pestañas SIGN IN / REGISTER */}
           <div className="flex bg-e22-bg p-1 rounded-xl border border-e22-border">
             <button
@@ -247,7 +265,7 @@ export default function AccessPortalPage() {
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              SIGN IN
+              INGRESAR
             </button>
             <button
               type="button"
@@ -258,7 +276,7 @@ export default function AccessPortalPage() {
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              REGISTER
+              REGISTRARSE
             </button>
           </div>
 

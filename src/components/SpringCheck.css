@@ -107,10 +107,13 @@
 .spring-check__label {
   position: relative;
   display: inline-block;
+  max-width: calc(100% - var(--sc-box) - var(--sc-gap));
+  word-break: break-word;
 }
 
 .spring-check__word {
-  display: inline-block;
+  display: inline;
+  word-break: break-word;
 }
 
 .spring-check__rule {

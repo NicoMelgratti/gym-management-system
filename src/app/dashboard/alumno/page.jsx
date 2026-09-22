@@ -74,7 +74,7 @@ export default function AlumnoDashboardPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-6 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
         {/* Cabecera */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-e22-border/80 pb-5">
           <div>
@@ -82,7 +82,7 @@ export default function AlumnoDashboardPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               MEMBER ACCESS PORTAL // E22 CORE
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase">
+            <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white uppercase">
               HOLA, {socioData?.nombre || currentUser?.nombre}
             </h1>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">
@@ -90,17 +90,17 @@ export default function AlumnoDashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             <button
               onClick={() => currentUser?.id && loadProfile(currentUser.id)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-zinc-400 bg-e22-card border border-e22-border hover:bg-zinc-900 hover:text-white transition flex items-center gap-2"
+              className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold text-zinc-400 bg-e22-card border border-e22-border hover:bg-zinc-900 hover:text-white transition flex items-center justify-center gap-2"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span>Sincronizar</span>
             </button>
             <Link
               href="/dashboard/alumno/rutina"
-              className="px-4 py-2 rounded-xl text-xs font-black text-zinc-950 bg-white hover:bg-zinc-200 transition flex items-center gap-2 shadow"
+              className="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-black text-zinc-950 bg-white hover:bg-zinc-200 transition flex items-center justify-center gap-2 shadow"
             >
               <Dumbbell className="w-3.5 h-3.5" />
               <span>Ver Planilla</span>
@@ -111,15 +111,15 @@ export default function AlumnoDashboardPage() {
         {/* 3. CARD DE CONTADOR DE 30 DÍAS DE SUSCRIPCIÓN */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Contador de Membresía */}
-          <div className="lg:col-span-8 bg-e22-card border border-e22-border rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
-            <div className="flex justify-between items-start">
+          <div className="lg:col-span-8 bg-e22-card border border-e22-border rounded-2xl p-5 sm:p-6 relative overflow-hidden flex flex-col justify-between">
+            <div className="flex justify-between items-start gap-2">
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block mb-1">
                   ESTADO DE SUSCRIPCIÓN // 30-DAY CYCLE
                 </span>
                 <div className="flex items-center gap-2.5">
                   <span
-                    className={`w-2.5 h-2.5 rounded-full ${
+                    className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                       isAlDia
                         ? 'bg-emerald-500 shadow-sm shadow-emerald-500/50'
                         : isPendiente
@@ -127,7 +127,7 @@ export default function AlumnoDashboardPage() {
                         : 'bg-red-500 shadow-sm shadow-red-500/50'
                     }`}
                   />
-                  <h3 className="text-xl font-black tracking-tight text-white">
+                  <h3 className="text-lg sm:text-xl font-black tracking-tight text-white">
                     {isAlDia
                       ? 'Membresía Activa y Habilitada'
                       : isPendiente
@@ -138,7 +138,7 @@ export default function AlumnoDashboardPage() {
               </div>
 
               <span
-                className={`text-[10px] font-mono uppercase px-2.5 py-1 rounded-md border ${
+                className={`text-[10px] font-mono uppercase px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border shrink-0 ${
                   isAlDia
                     ? 'bg-emerald-950/40 text-emerald-400 border-emerald-900'
                     : isPendiente
@@ -146,20 +146,20 @@ export default function AlumnoDashboardPage() {
                     : 'bg-red-950/40 text-red-400 border-red-900'
                 }`}
               >
-                {isAlDia ? 'AL DÍA' : isPendiente ? 'PENDIENTE PROFESOR' : 'VENCIDO'}
+                {isAlDia ? 'AL DÍA' : isPendiente ? 'PENDIENTE' : 'VENCIDO'}
               </span>
             </div>
 
             {/* Número gigante de días */}
-            <div className="my-6 flex items-baseline gap-3">
-              <span className="text-6xl sm:text-7xl font-black font-mono tracking-tight text-white">
+            <div className="my-5 sm:my-6 flex items-baseline gap-3">
+              <span className="text-5xl sm:text-7xl font-black font-mono tracking-tight text-white leading-none">
                 {dias}
               </span>
               <div>
-                <span className="text-sm uppercase tracking-wider font-bold text-zinc-400 block">
+                <span className="text-xs sm:text-sm uppercase tracking-wider font-bold text-zinc-400 block">
                   Días Restantes
                 </span>
-                <span className="text-xs text-zinc-500 font-mono">
+                <span className="text-[11px] sm:text-xs text-zinc-500 font-mono">
                   {socioData?.vencimiento_cuota
                     ? `Vence: ${socioData.vencimiento_cuota}`
                     : 'Aún no posee cuota aprobada'}
