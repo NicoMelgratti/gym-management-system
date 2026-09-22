@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
 import MaskedHeading from '@/components/MaskedHeading';
+import Navigation2 from '@/components/Navigation2';
 
 export default function AccessPortalPage() {
   const router = useRouter();
@@ -172,81 +173,23 @@ export default function AccessPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col lg:flex-row font-sans selection:bg-white selection:text-black">
-      {/* Barra superior visible solo en móvil */}
-      <div className="lg:hidden p-4 border-b border-e22-border flex items-center justify-between bg-e22-surface">
-        <div className="flex items-center gap-3">
-          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-black border border-zinc-700 shrink-0">
-            <Image src="/logo.png" alt="E22 Logo" fill className="object-cover" priority />
-          </div>
-          <div>
-            <span className="text-sm font-black tracking-widest text-white block leading-none">E22 GYM</span>
-            <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block mt-0.5">ELITE CORE</span>
-          </div>
-        </div>
-        <span className="text-[10px] font-mono text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-700">
-          PORTAL OFICIAL
-        </span>
-      </div>
-
-      {/* 1. BARRA LATERAL IZQUIERDA (Escritorio >= lg) */}
-      <aside className="hidden lg:flex w-60 bg-e22-surface border-r border-e22-border flex-col justify-between shrink-0 p-5">
-        <div className="space-y-6">
-          {/* Logo E22 */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-black border border-zinc-700 shrink-0">
-              <Image src="/logo.png" alt="E22 Logo" fill className="object-cover" priority />
-            </div>
-            <span className="text-base font-black tracking-widest text-white">E22 GYM</span>
-          </div>
-
-          {/* Buscador */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Buscar registros..."
-              className="w-full bg-e22-bg border border-e22-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
-            />
-          </div>
-
-          {/* Módulos de demostración */}
-          <nav className="space-y-1">
-            <p className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider px-2 mb-2">SISTEMA E22</p>
-            <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-white bg-e22-border/60 rounded-lg">
-              <LayoutDashboard className="w-4 h-4 text-zinc-300" />
-              <span>Acceso al Gimnasio</span>
-            </div>
-            <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 rounded-lg">
-              <Users className="w-4 h-4" />
-              <span>Padrón de Socios</span>
-            </div>
-            <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 rounded-lg">
-              <Dumbbell className="w-4 h-4" />
-              <span>Planillas Técnicas</span>
-            </div>
-            <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 rounded-lg">
-              <Calendar className="w-4 h-4" />
-              <span>Asistencia & Cuotas</span>
-            </div>
-            <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-200 rounded-lg">
-              <BarChart3 className="w-4 h-4" />
-              <span>Progresión & PRs</span>
-            </div>
-          </nav>
-        </div>
-
-        {/* Footer lateral */}
-        <div className="border-t border-e22-border pt-4">
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-mono text-[11px]">Sistema Operativo v2.5</span>
-          </div>
-        </div>
-      </aside>
+    <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col font-sans selection:bg-white selection:text-black relative">
+      {/* 1. NAVEGADOR SUPERIOR CENTRADO CON GLASS EFFECT Y DROPDOWNS EXPANDIBLES (NAVIGATION 2) */}
+      <Navigation2
+        onSignInClick={() => {
+          setActiveTab('signin');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onRegisterClick={() => {
+          setActiveTab('register');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onHorariosClick={() => setShowHorariosModal(true)}
+        configuracion={configuracion}
+      />
 
       {/* 2. ÁREA CENTRAL HERO + FORMULARIO */}
-      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center p-4 sm:p-8 lg:p-12 gap-8 lg:gap-14 overflow-y-auto">
+      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center p-4 sm:p-8 lg:p-12 pt-24 sm:pt-28 lg:pt-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
         {/* HERO BRANDING */}
         <div className="max-w-md w-full space-y-4 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">
