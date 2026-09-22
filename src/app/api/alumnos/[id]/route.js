@@ -11,11 +11,10 @@ export async function GET(request, { params }) {
     }
 
     const userRes = await query(
-      `SELECT u.id, u.dni, u.nombre, u.apellido, u.email, u.telefono, u.rol_id, 
-              r.nombre as rol_nombre, u.vencimiento_cuota, u.estado_pago,
-              u.alergias, u.patologias, u.dias_asistencia, u.primer_pago_realizado
+      `SELECT u.id, u.dni, u.nombre, u.apellido, u.email, u.telefono, u.rol, 
+              u.vencimiento_cuota, u.estado_pago, u.habilitado,
+              u.alergias, u.patologias, u.dias_asistencia, u.fecha_registro
        FROM e22.usuarios u
-       JOIN e22.roles r ON u.rol_id = r.id
        WHERE u.id = $1
        LIMIT 1;`,
       [alumnoId]
@@ -27,12 +26,8 @@ export async function GET(request, { params }) {
 
     const alumno = userRes.rows[0];
     alumno.nombre_completo = alumno.apellido ? `${alumno.nombre} ${alumno.apellido}` : alumno.nombre;
-    alumno.estado_pago = alumno.vencimiento_cuota
-      ? calcularEstadoPago(alumno.vencimiento_cuota)
-      : 'rojo';
-    alumno.dias_restantes = alumno.vencimiento_cuota
-      ? diasRestantes(alumno.vencimiento_cuota)
-      : 0;
+    alumno.dias_restantes = alumno.vencimiento_cuota ? diasRestantes(alumno.vencimiento_cuota) : 0;
+    alumno.estado_pago = estadoCuota(alumno.vencimiento_cuota, alumno.habilitado);
 
     // Rutina asignada
     const rutinaRes = await query(

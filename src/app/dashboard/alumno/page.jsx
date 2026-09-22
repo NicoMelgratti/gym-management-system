@@ -52,10 +52,22 @@ export default function AlumnoDashboardPage() {
       setLoading(true);
       const res = await fetch(`/api/socios/${id}`);
       const data = await res.json();
-      if (data.ok) {
+      if (data.ok && data.socio) {
         setSocioData(data.socio);
         setRutinaData(data.rutina);
         setRegistrosPeso(data.registros_peso || []);
+
+        // Sincronizar el objeto guardado en localStorage para que toda la interfaz se actualice
+        const updatedUser = {
+          ...currentUser,
+          ...data.socio,
+          dias_restantes: data.socio.dias_restantes,
+          estado_pago: data.socio.estado_pago,
+          habilitado: data.socio.habilitado,
+          vencimiento_cuota: data.socio.vencimiento_cuota,
+        };
+        localStorage.setItem('e22_user', JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
       }
     } catch (err) {
       console.error('Error cargando perfil del socio:', err);
@@ -65,8 +77,8 @@ export default function AlumnoDashboardPage() {
   };
 
   const dias = socioData?.dias_restantes ?? 0;
-  const isAlDia = socioData?.estado_pago === 'al_dia' && dias > 0;
-  const isPendiente = socioData?.estado_pago === 'pendiente';
+  const isAlDia = (socioData?.estado_pago === 'al_dia' || socioData?.habilitado) && dias > 0;
+  const isPendiente = socioData?.estado_pago === 'pendiente' && !isAlDia;
   const isVencido = !isAlDia && !isPendiente;
 
   return (

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query, diasRestantes, estadoCuota } from '@/lib/db';
+import { parsePlanillaData } from '@/lib/rutinas';
 
 export async function GET(request, { params }) {
   try {

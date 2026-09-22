@@ -61,6 +61,19 @@ export default function AlumnoRutinaPage() {
       if (data.ok) {
         setAlumnoData(data.socio);
         setRutinaData(data.rutina);
+        if (data.socio) {
+          try {
+            const saved = localStorage.getItem('e22_user');
+            if (saved) {
+              const current = JSON.parse(saved);
+              const updated = { ...current, ...data.socio };
+              localStorage.setItem('e22_user', JSON.stringify(updated));
+              setCurrentUser(updated);
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
         if (data.rutina) {
           const parsed =
             data.rutina.planilla ||
@@ -127,7 +140,7 @@ export default function AlumnoRutinaPage() {
     generarRutinaPDF({ alumno: alumnoData, rutina: rutinaData, planilla });
   };
 
-  const isAlDia = alumnoData?.estado_pago === 'al_dia';
+  const isAlDia = alumnoData?.estado_pago === 'al_dia' || alumnoData?.habilitado;
 
   return (
     <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col lg:flex-row font-sans selection:bg-white selection:text-black">
