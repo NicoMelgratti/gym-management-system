@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TrainingSheet from '@/components/TrainingSheet';
+import ScanRoutineModal from '@/components/ScanRoutineModal';
 import {
   DEFAULT_BLOQUES,
   DEFAULT_PLANILLA_FISICA_E22,
@@ -55,6 +56,21 @@ export default function ProfesorRutinasPage() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [vistaPrevia, setVistaPrevia] = useState(false);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+
+  const handleRoutineExtracted = (extracted) => {
+    if (!extracted) return;
+    if (extracted.planNumero) setPlanNumero(extracted.planNumero);
+    if (extracted.objetivo) setObjetivo(extracted.objetivo);
+    if (extracted.indicacionPrevia) setIndicacionPrevia(extracted.indicacionPrevia);
+    if (extracted.bloques && extracted.bloques.length > 0) setBloques(extracted.bloques);
+    if (extracted.dias && extracted.dias.length > 0) {
+      setDias(extracted.dias);
+      setDiaActivoIndex(0);
+    }
+    setStatusMessage('¡Rutina digitalizada con éxito mediante Gemini IA y cargada en el editor!');
+    setTimeout(() => setStatusMessage(''), 5000);
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('e22_user');
@@ -388,6 +404,16 @@ export default function ProfesorRutinasPage() {
             <div className="flex items-center gap-2.5 flex-wrap">
               <button
                 type="button"
+                onClick={() => setIsScanModalOpen(true)}
+                className="flex items-center gap-2 px-3.5 py-2 bg-zinc-800 hover:bg-zinc-750 text-white text-xs font-bold rounded-xl border border-zinc-700 transition shadow"
+                title="Escanear foto de hoja escrita a mano o archivo Excel con Gemini IA"
+              >
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Escanear con IA</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setVistaPrevia(!vistaPrevia)}
                 className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl border transition ${
                   vistaPrevia
@@ -494,8 +520,17 @@ export default function ProfesorRutinasPage() {
             {/* Acciones Rápidas */}
             <div className="pt-2 border-t border-e22-border/60 space-y-2">
               <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block">
-                Plantillas & Asistentes
+                Plantillas & Asistentes IA
               </span>
+              <button
+                type="button"
+                onClick={() => setIsScanModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-black rounded-xl transition shadow"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-zinc-950" />
+                <span>Escanear Foto o Excel con IA</span>
+              </button>
+
               <button
                 type="button"
                 onClick={handleCargarModeloFoto}
@@ -856,6 +891,12 @@ export default function ProfesorRutinasPage() {
             )}
           </div>
         </div>
+        {/* MODAL DE ESCANEO DE RUTINA CON IA (GEMINI) */}
+        <ScanRoutineModal
+          isOpen={isScanModalOpen}
+          onClose={() => setIsScanModalOpen(false)}
+          onRoutineExtracted={handleRoutineExtracted}
+        />
       </main>
     </div>
   );

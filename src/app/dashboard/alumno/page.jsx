@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
+import AICoachWidget from '@/components/AICoachWidget';
 import {
   Calendar,
   Dumbbell,
@@ -394,6 +395,9 @@ export default function AlumnoDashboardPage() {
             )}
           </div>
         </div>
+
+        {/* COACH VIRTUAL E22 INTELIGENTE */}
+        <AICoachWidget alumno={socioData || currentUser} rutina={rutinaData} />
       </main>
     </div>
   );
