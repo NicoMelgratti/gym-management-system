@@ -4,94 +4,79 @@
 [![React](https://img.shields.io/badge/React-19.0.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-IA_Multimodal-8E75C4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](LICENSE)
 
-Plataforma web integral de alto rendimiento para la administración de cuotas, membresías de 30 días, prescripción de rutinas por días y registro de cargas progresivas de **E22 GYM**.
+Plataforma web integral de alto rendimiento diseñada para la administración de gimnasios, gestión de cuotas y membresías de 30 días, digitalización de planillas técnicas de entrenamiento, prescripción personalizada de rutinas y seguimiento de sobrecarga progresiva con Inteligencia Artificial.
 
-Diseñada bajo una estética **Stealth Dark Minimalista Deportiva** (paleta negro/zinc con alto contraste y tipografía monoespaciada para telemetría deportiva), eliminando distracciones y enfocándose en la eficiencia operativa.
-
----
-
-## 📸 Capturas y Características Destacadas
-
-- **Estética Stealth Monocromática**: Fondo oscuro profundo (`#09090b`), bordes sutiles de precisión (`#23232b`) y botones de acento blanco sólido.
-- **Sin cuentas demo ni atajos**: Flujo real de enrolamiento, verificación de transferencias bancarias y habilitación manual o automática.
-- **División de Rutina por Días (hasta 6 días)**: Título de enfoque por día, ejercicios estructurados, series x reps y especificaciones de máquinas a utilizar.
-- **Tachado Interactivo `<SpringCheck />`**: Animación de resorte y tachado para marcar los ejercicios realizados en sala durante el entrenamiento.
-- **Sobrecarga Progresiva**: Módulo de seguimiento de pesos semana tras semana (press banca, sentadilla, bíceps, peso muerto, etc.) con cálculo de marcas personales (PRs).
+Diseñada bajo una estética **Stealth Dark Minimalista Deportiva** (paleta negro/zinc con alto contraste y tipografía monoespaciada para telemetría de gimnasio), 100% responsiva para celulares y tablets.
 
 ---
 
-## 🔑 Credenciales de Acceso
+## 🚀 Características Principales
 
-| Rol | Usuario / Identificador | Contraseña | Panel Asignado |
+### 🏋️ 1. Planilla Técnica Oficial E22 (Estilo Hoja Física)
+- **Fidelidad al Formato Físico**: Réplica digital exacta de la hoja de entrenamiento del centro de alto rendimiento.
+- **Cabecera Oficial**: Identificador de `Plan Nº`, socio y objetivo individual personalizable por el entrenador (ej. *Aumento de fuerza e hipertrofia*).
+- **Periodización Multi-Bloque**: 4 etapas de progresión con fechas límite y control de intensidad **RIR** (*Repeticiones en Reserva*), con subcolumnas de **Kg**, **R** (Repeticiones) y **S** (Series).
+- **Redacción Libre de Ejercicios**: El profesor redacta los ejercicios y especificaciones de máquinas a utilizar sin restricciones de listas predeterminadas.
+- **Grilla de 30 Días de Asistencia**: Matriz interactiva de 30 casillas donde el alumno tacha cada sesión completada, con persistencia inmediata en base de datos.
+- **Doble Tema de Visualización**: Alternancia con un clic entre **Modo Oscuro Deportivo** y **Estilo Hoja Papel** (claro).
+- **Exportación en PDF Oficial**: Descarga directa de la planilla técnica en formato horizontal A4 de alta definición para imprimir o llevar en el celular.
+
+### 🤖 2. Inteligencia Artificial Multimodal (Google Gemini)
+- **Escáner de Rutinas en Foto o Excel (`ScanRoutineModal`)**:
+  - Digitaliza fotos de hojas físicas escritas a mano (`.jpg`, `.png`, `.webp`) o archivos de cálculo (`.xlsx`, `.csv`).
+  - La IA analiza la caligrafía, reconoce los días, ejercicios, series, repeticiones y etapas de progresión, convirtiéndolos en la estructura oficial de E22.
+  - Incluye parser local de contingencia para planillas Excel y bypass directo al editor ante caídas externas de conexión.
+- **Coach Virtual E22 Inteligente (`AICoachWidget`)**:
+  - Asistente personal disponible en el panel del alumno en tiempo real.
+  - **Mapeo Semanal Automático**: Detecta el día actual en horario local argentino y le indica al alumno qué le toca entrenar (ej. *Lunes = Día 1: Pecho y Tríceps*).
+  - Desglosa la lista completa de ejercicios con series, repeticiones recomendadas y máquina requerida según la planilla activa del socio.
+  - Responde dudas biomecánicas de ejercicios (sentadillas, press banca, dominadas), tiempos de descanso óptimos y conceptos de RIR.
+  - Motor híbrido ultra veloz con **Gemini Flash Lite** (~950 ms) y fallback local experto para asegurar respuestas sin demoras.
+
+### 📱 3. Experiencia Móvil Optimizada (100% Responsive)
+- **Menú Hamburguesa Flotante**: Encabezado sticky con cajón lateral (*slide-over drawer*) con fondo difuminado (*backdrop blur*).
+- **Cierre Táctil Inteligente**: Cierre automático al tocar fuera del menú, cambiar de pestaña o presionar la tecla `Escape`.
+- **Prevención de Desbordes**: Ajuste de ancho de pantalla, control de tipografía táctil y tablas adaptables con scroll suave para evitar desplazamientos horizontales no deseados.
+
+### 💳 4. Control de Cuotas y Membresías de 30 Días
+- **Contador Regresivo en Vivo**: Muestra al socio los días exactos que restan de su suscripción.
+- **Notificación y Aprobación de Pagos**: Envío de comprobantes de transferencia bancaria con verificación en un solo clic por parte del profesor.
+- **Habilitación Inmediata**: La aprobación suma 30 días de suscripción acumulativos y habilita automáticamente el acceso a la planilla y al gimnasio.
+
+### 📈 5. Sobrecarga Progresiva (Récords Personales)
+- Registro semana tras semana de cargas (kg), repeticiones y notas técnicas en ejercicios clave.
+- Detección y badges automáticos de **PRs (Personal Records)**.
+- Historial técnico para evaluar evolución a lo largo del tiempo.
+
+---
+
+## 🔒 Arquitectura de Seguridad y Roles
+
+El acceso está protegido por roles y verificación en servidor:
+
+| Rol | Identificador | Acceso y Seguridad | Panel Asignado |
 | :--- | :--- | :--- | :--- |
-| **Profesor / Administrador** | `e22gym` | `admin123` | `/dashboard/profesor` |
-| **Alumnos / Socios** | `Número de DNI` | Clave elegida al registrarse | `/dashboard/alumno` |
+| **Profesor / Administrador** | Usuario Administrativo | Contraseña encriptada configurada en el despliegue | `/dashboard/profesor` |
+| **Alumno / Socio** | Número de DNI | Contraseña personal elegida al registrarse | `/dashboard/alumno` |
+
+> [!NOTE]
+> Las credenciales administrativas no se incluyen en el repositorio público por motivos de seguridad. Se configuran mediante variables de entorno o scripts de inicialización interna.
 
 ---
 
-## 🛠️ Módulos Principales
+## 🗄️ Esquema de Base de Datos (PostgreSQL)
 
-### 1. Portal de Acceso e Inscripción (`/`)
-- **Ingreso Unificado (Sign In)**: Acceso para el administrador (`e22gym`) y socios mediante su DNI.
-- **Registro de Nuevos Socios (Register)**:
-  - Nombre, Apellido, DNI (utilizado como identificador de usuario) y Teléfono.
-  - Contraseña personalizada.
-  - **Ficha Médica Deportiva**: Declaración obligatoria de alergias y patologías/lesiones preexistentes que alertan al profesor en su panel.
-  - Los alumnos inician con estado de cuota `pendiente` hasta registrar y validar su primer pago.
-
-### 2. Panel de Control del Entrenador (`/dashboard/profesor`)
-- **Lista de Socios & Búsqueda Instantánea**:
-  - Búsqueda en tiempo real por DNI o Nombre con el atajo de teclado `/`.
-  - Filtros rápidos: *Todos*, *Al Día* (verde), *Pendientes* (ámbar), *Vencidos* (rojo).
-  - Alertas médicas visibles en cada tarjeta de socio.
-- **Métricas del Gimnasio**: Telemetría en vivo de socios activos, pendientes de cobro, vencidos y capacidad de sala.
-- **Cola de Verificación de Pagos (`/dashboard/profesor/pagos`)**:
-  - Bandeja de transferencias bancarias notificadas por los alumnos.
-  - Aprobación con un solo clic: habilita al alumno inmediatamente y otorga **30 días de suscripción** a partir de ese momento.
-- **Estudio de Rutinas por Días (`/dashboard/profesor/rutinas`)**:
-  - Estructuración de rutinas en hasta **6 días como máximo** (`Día 1` a `Día 6`).
-  - **Título / Enfoque por jornada**: Ej. *Día 1: Pecho y Tríceps*, *Día 2: Espalda y Bíceps*, *Día 3: Piernas - Cuádriceps*.
-  - **Carga de Ejercicios**:
-    - Grupo muscular (Pecho, Espalda, Piernas, Cadena Posterior, Hombros, Brazos/Core) o nombre libre.
-    - Series y repeticiones estimadas con RPE.
-    - **Máquina a utilizar y notaciones de equipo** (ej: *Máquina Smith - carga guiada*, *Polea alta con soga*, *Banco inclinado 30°*).
-  - **Plantilla Oficial de 6 Días**: Botón con un clic para precargar una distribución completa de 6 días recomendada por E22.
-
-### 3. Portal del Alumno (`/dashboard/alumno`)
-- **Contador Regresivo de Membresía**:
-  - Muestra en número gigante los **días restantes del ciclo de 30 días**.
-  - Barra de progreso del mes y fecha exacta de vencimiento.
-- **Ficha de Salud y Asistencia**: Visualización de patologías, alergias y días de entrenamiento semanal.
-- **Planilla Interactiva de Rutina (`/dashboard/alumno/rutina`)**:
-  - Bloques organizados por días de entrenamiento.
-  - Componente `<SpringCheck />` para tachar cada ejercicio completado con efecto de resorte.
-  - Notaciones de máquinas a utilizar destacadas en cada movimiento.
-  - Persistencia en almacenamiento local para no perder el progreso del día.
-  - **Exportación a PDF**: Generación de planilla oficial en formato PDF lista para imprimir o compartir mediante `jspdf` y `jspdf-autotable`.
-- **Registro Semanal de Cargas (`/dashboard/alumno/progreso`)**:
-  - Registro semana tras semana del peso (kg), repeticiones y notas técnicas en ejercicios fundamentales.
-  - Badges de Récords Personales (PRs).
-  - Tabla de evolución histórica con filtros por ejercicio.
-- **Centro de Notificación de Pagos (`/dashboard/alumno/pagos`)**:
-  - Datos bancarios oficiales: Alias (`E22.GYM.FIT`) y CBU con botón de copiado rápido.
-  - Formulario para notificar el comprobante de transferencia y monto abonado.
-
----
-
-## 🗄️ Arquitectura de Base de Datos (PostgreSQL)
-
-Todo el sistema opera de manera aislada bajo el esquema `e22`:
+Todo el sistema opera dentro del esquema aislado `e22`:
 
 ```sql
--- Esquema E22
 CREATE SCHEMA IF NOT EXISTS e22;
 
--- Tipo Enumerado de Roles
 CREATE TYPE e22.rol_enum AS ENUM ('usuario', 'profesor');
 
--- Tabla de Usuarios y Socios
+-- Usuarios y Socios
 CREATE TABLE e22.usuarios (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE,
@@ -111,7 +96,7 @@ CREATE TABLE e22.usuarios (
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Rutinas Asignadas
+-- Planillas y Rutinas de Entrenamiento
 CREATE TABLE e22.rutinas (
   id SERIAL PRIMARY KEY,
   usuario_id INTEGER REFERENCES e22.usuarios(id) ON DELETE CASCADE,
@@ -122,7 +107,7 @@ CREATE TABLE e22.rutinas (
   fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Sobrecarga Progresiva (Cargas Semanales)
+-- Registro de Sobrecarga Progresiva (PRs)
 CREATE TABLE e22.registros_peso (
   id SERIAL PRIMARY KEY,
   usuario_id INTEGER REFERENCES e22.usuarios(id) ON DELETE CASCADE,
@@ -134,7 +119,7 @@ CREATE TABLE e22.registros_peso (
   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de Comprobantes y Pagos Notificados
+-- Pagos y Comprobantes Notificados
 CREATE TABLE e22.pagos_notificados (
   id SERIAL PRIMARY KEY,
   usuario_id INTEGER REFERENCES e22.usuarios(id) ON DELETE CASCADE,
@@ -149,11 +134,34 @@ CREATE TABLE e22.pagos_notificados (
 
 ---
 
+## 📡 API REST
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Autenticación para profesores y socios (por DNI). |
+| `POST` | `/api/auth/register` | Registro de nuevos socios con ficha médica deportiva. |
+| `GET` | `/api/socios` | Directorio de socios con filtros de estado y búsqueda por DNI. |
+| `GET` | `/api/socios/[id]` | Perfil integral del socio: cuota, planilla técnica y registros. |
+| `GET` | `/api/rutinas` | Obtener la planilla técnica asignada al socio. |
+| `POST` | `/api/rutinas` | Crear o modificar planilla técnica personalizada. |
+| `PATCH`| `/api/rutinas` | Registrar o desmarcar días en la grilla de asistencia de 30 días. |
+| `POST` | `/api/ia/coach` | Consultar al Coach Virtual E22 sobre la rutina del día o técnica. |
+| `POST` | `/api/ia/analizar-rutina` | Digitalizar rutina mediante IA desde foto o archivo Excel. |
+| `POST` | `/api/pagos/notificar` | Notificar comprobante de pago de membresía. |
+| `GET` | `/api/pagos` | Listar pagos pendientes de verificación o históricos. |
+| `POST` | `/api/pagos/aprobar` | Validar pago, extender suscripción (+30 días) y habilitar acceso. |
+| `GET` | `/api/progreso` | Consultar historial de cargas semanales y récords personales (PRs). |
+| `POST` | `/api/progreso` | Guardar registro de carga semanal por ejercicio. |
+| `DELETE`| `/api/progreso` | Eliminar registro de peso. |
+
+---
+
 ## 🚀 Instalación y Puesta en Marcha
 
 ### Requisitos Previos
 - **Node.js** v18 o superior.
-- **PostgreSQL** v14 o superior en ejecución en `localhost:5432` (o servicio cloud).
+- **PostgreSQL** v14 o superior (local o en la nube como Neon / Supabase).
+- Clave API de **Google Gemini** (opcional, para funciones de IA).
 
 ### 1. Clonar el Repositorio
 ```bash
@@ -167,42 +175,28 @@ npm install
 ```
 
 ### 3. Configurar Variables de Entorno
-Crea un archivo `.env.local` en la raíz del proyecto tomando como base `.env.example`:
+Crea un archivo `.env.local` en la raíz del proyecto tomando como referencia el archivo `.env.example`:
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+# Conexión a Base de Datos PostgreSQL
+DATABASE_URL="postgresql://usuario:password@localhost:5432/nombre_base_datos?sslmode=disable"
+PG_SCHEMA=e22
+
+# Clave API para IA (Google AI Studio)
+GEMINI_API_KEY="tu_clave_de_gemini_aqui"
 ```
 
-### 4. Inicializar la Base de Datos
-Ejecuta el script automatizado para crear el esquema `e22`, las tablas e insertar el usuario profesor administrador:
+### 4. Inicializar Base de Datos
+Ejecuta el script de migración para generar el esquema `e22` y las tablas necesarias:
 ```bash
 node scripts/rebuild_e22_database.js
 ```
 
-### 5. Iniciar el Servidor de Desarrollo
+### 5. Iniciar en Modo Desarrollo
 ```bash
 npm run dev
 ```
 
-La aplicación estará lista en: **[http://localhost:3000](http://localhost:3000)**
-
----
-
-## 📡 Endpoints de la API REST
-
-| Método | Endpoint | Descripción |
-| :--- | :--- | :--- |
-| `POST` | `/api/auth/login` | Iniciar sesión (admin `e22gym` o socio por DNI). |
-| `POST` | `/api/auth/register` | Enrolar nuevo socio con ficha de salud. |
-| `GET` | `/api/socios` | Lista de socios filtrada por estado y búsqueda por DNI. |
-| `GET` | `/api/socios/[id]` | Perfil completo del socio (rutina, pagos, cargas). |
-| `POST` | `/api/pagos/notificar` | Notificar comprobante de transferencia bancaria. |
-| `GET` | `/api/pagos` | Lista de comprobantes pendientes o históricos. |
-| `POST` | `/api/pagos/aprobar` | Aprobar cuota y otorgar 30 días de suscripción. |
-| `GET` | `/api/rutinas` | Obtener rutina activa del socio. |
-| `POST` | `/api/rutinas` | Crear o actualizar protocolo de rutina de hasta 6 días. |
-| `GET` | `/api/progreso` | Consultar histórico de pesos y récords personales (PRs). |
-| `POST` | `/api/progreso` | Registrar nueva carga semanal en un ejercicio. |
-| `DELETE`| `/api/progreso` | Eliminar registro de carga. |
+La plataforma estará lista en: **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
