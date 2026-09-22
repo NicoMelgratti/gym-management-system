@@ -23,6 +23,16 @@ export default function AlumnoPagosPage() {
   const [pagosList, setPagosList] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [configuracion, setConfiguracion] = useState({
+    precios: { cuota_mensual: 25000 },
+    datos_bancarios: {
+      alias: 'E22.GYM.FIT',
+      cbu: '0000003100045892019482',
+      titular: 'E22 GYM FITNESS S.R.L.',
+      banco: 'Banco Macro'
+    }
+  });
+
   // Formulario de Pago
   const [metodo, setMetodo] = useState('transferencia');
   const [referencia, setReferencia] = useState('');
@@ -54,14 +64,26 @@ export default function AlumnoPagosPage() {
   const loadData = async (userId) => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/socios/${userId}`);
-      const data = await res.json();
-      if (data.ok) {
-        setSocioData(data.socio);
-        setPagosList(data.pagos || []);
+      const [resSocio, resConfig] = await Promise.all([
+        fetch(`/api/socios/${userId}`),
+        fetch('/api/configuracion')
+      ]);
+
+      const dataSocio = await resSocio.json();
+      if (dataSocio.ok) {
+        setSocioData(dataSocio.socio);
+        setPagosList(dataSocio.pagos || []);
+      }
+
+      const dataConfig = await resConfig.json();
+      if (dataConfig.ok && dataConfig.configuracion) {
+        setConfiguracion(dataConfig.configuracion);
+        if (dataConfig.configuracion.precios?.cuota_mensual) {
+          setMonto(String(dataConfig.configuracion.precios.cuota_mensual));
+        }
       }
     } catch (err) {
-      console.error('Error cargando pagos:', err);
+      console.error('Error cargando pagos o configuracion:', err);
     } finally {
       setLoading(false);
     }
@@ -188,12 +210,12 @@ export default function AlumnoPagosPage() {
                     Alias Bancario
                   </span>
                   <span className="text-base font-black font-mono text-white mt-0.5 block">
-                    E22.GYM.FIT
+                    {configuracion.datos_bancarios?.alias || 'E22.GYM.FIT'}
                   </span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy('E22.GYM.FIT', 'alias')}
+                  onClick={() => handleCopy(configuracion.datos_bancarios?.alias || 'E22.GYM.FIT', 'alias')}
                   className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg flex items-center gap-1.5 transition font-mono"
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -208,12 +230,12 @@ export default function AlumnoPagosPage() {
                     CBU Único
                   </span>
                   <span className="text-xs font-mono text-zinc-300 mt-0.5 block truncate">
-                    0000003100045892019482
+                    {configuracion.datos_bancarios?.cbu || '0000003100045892019482'}
                   </span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy('0000003100045892019482', 'cbu')}
+                  onClick={() => handleCopy(configuracion.datos_bancarios?.cbu || '0000003100045892019482', 'cbu')}
                   className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg flex items-center gap-1.5 transition font-mono shrink-0"
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -225,11 +247,15 @@ export default function AlumnoPagosPage() {
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="bg-e22-bg p-3 rounded-xl border border-e22-border">
                   <span className="text-[10px] uppercase font-bold text-zinc-500 block">Titular</span>
-                  <p className="text-white font-mono mt-0.5">E22 GYM FITNESS S.R.L.</p>
+                  <p className="text-white font-mono mt-0.5 truncate">
+                    {configuracion.datos_bancarios?.titular || 'E22 GYM FITNESS S.R.L.'}
+                  </p>
                 </div>
                 <div className="bg-e22-bg p-3 rounded-xl border border-e22-border">
                   <span className="text-[10px] uppercase font-bold text-zinc-500 block">Membresía Mensual</span>
-                  <p className="text-white font-mono font-bold mt-0.5">$25.000 / 30 días</p>
+                  <p className="text-white font-mono font-bold mt-0.5">
+                    ${Number(configuracion.precios?.cuota_mensual || 25000).toLocaleString('es-AR')} / 30 días
+                  </p>
                 </div>
               </div>
             </div>

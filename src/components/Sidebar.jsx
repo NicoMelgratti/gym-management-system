@@ -17,6 +17,8 @@ import {
   X,
   Shield,
   CheckCircle2,
+  Clock,
+  Sliders,
 } from 'lucide-react';
 
 export default function Sidebar({ user, activeTab, onTabChange }) {
@@ -179,6 +181,19 @@ export default function Sidebar({ user, activeTab, onTabChange }) {
               >
                 <Dumbbell className="w-4 h-4" />
                 <span>Estudio de Rutinas</span>
+              </Link>
+
+              <Link
+                href="/dashboard/profesor/configuracion"
+                onClick={() => setIsMobileOpen(false)}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
+                  pathname === '/dashboard/profesor/configuracion'
+                    ? 'bg-white text-zinc-950 shadow'
+                    : 'text-zinc-400 hover:text-white hover:bg-e22-card'
+                }`}
+              >
+                <Clock className="w-4 h-4" />
+                <span>Horarios & Precios</span>
               </Link>
             </>
           ) : (

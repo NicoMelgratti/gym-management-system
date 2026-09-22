@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -24,12 +24,29 @@ import {
   EyeOff,
   Sparkles,
   Activity,
+  Clock,
+  DollarSign,
+  X,
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
+import MaskedHeading from '@/components/MaskedHeading';
 
 export default function AccessPortalPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('signin'); // 'signin' | 'register'
+  const [showHorariosModal, setShowHorariosModal] = useState(false);
+  const [configuracion, setConfiguracion] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/configuracion')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.configuracion) {
+          setConfiguracion(data.configuracion);
+        }
+      })
+      .catch((err) => console.error('Error fetching config on landing:', err));
+  }, []);
 
   // Formulario Sign In
   const [identifier, setIdentifier] = useState('');
@@ -233,33 +250,61 @@ export default function AccessPortalPage() {
         {/* HERO BRANDING */}
         <div className="max-w-md w-full space-y-4 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">
-            <span className="w-2 h-2 rounded-full bg-white" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>CENTRO DE ALTO RENDIMIENTO</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-            E22 TRAINING <br className="hidden sm:inline" />
-            <span className="text-zinc-400">MANAGEMENT</span>
-          </h1>
+          <div className="space-y-1">
+            <MaskedHeading
+              text="E22 GYM"
+              src="/gym-hero.png"
+              fillScale={1.35}
+              parallax={32}
+              drift={16}
+              reveal="rise"
+              trigger="view"
+              weight={900}
+              textScale={0.22}
+              align="inherit"
+              className="tracking-tight leading-none drop-shadow-2xl"
+            />
+            <h1 className="text-xl sm:text-2xl font-black tracking-widest text-zinc-400 font-mono">
+              TRAINING MANAGEMENT
+            </h1>
+          </div>
 
           <p className="text-sm text-zinc-400 leading-relaxed font-sans">
             Plataforma oficial de control de membresías, prescripción técnica de rutinas por días, seguimiento de sobrecarga progresiva y asistencia de <strong>E22 GYM</strong>.
           </p>
 
-          {/* Métricas rápidas */}
+          {/* Métricas rápidas dinámicas */}
           <div className="grid grid-cols-3 gap-3 pt-3 border-t border-e22-border">
             <div>
-              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">24/7</p>
-              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Acceso</p>
+              <p className="text-base sm:text-xl font-black text-white tracking-tight">07 - 22hs</p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Musculación</p>
             </div>
             <div>
-              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">0%</p>
-              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Distracciones</p>
+              <p className="text-base sm:text-xl font-black text-white tracking-tight">
+                ${Number(configuracion?.precios?.cuota_mensual || 25000).toLocaleString('es-AR')}
+              </p>
+              <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Cuota / Mes</p>
             </div>
             <div>
-              <p className="text-lg sm:text-2xl font-black text-white tracking-tight">100%</p>
+              <p className="text-base sm:text-xl font-black text-emerald-400 tracking-tight">100%</p>
               <p className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-500 mt-0.5">Enfoque Elite</p>
             </div>
+          </div>
+
+          {/* Botón interactivo para ver cronograma y tarifas */}
+          <div className="pt-2 flex items-center justify-center xl:justify-start gap-3">
+            <button
+              type="button"
+              onClick={() => setShowHorariosModal(true)}
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-500 rounded-xl text-xs font-bold text-zinc-200 hover:text-white transition shadow-lg group"
+            >
+              <Clock className="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-45 transition-transform" />
+              <span>Ver Horarios de Clases & Tarifas</span>
+            </button>
           </div>
         </div>
 
@@ -654,6 +699,108 @@ export default function AccessPortalPage() {
             </div>
           )}
         </div>
+
+        {/* Modal de Horarios & Tarifas */}
+        {showHorariosModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              onClick={() => setShowHorariosModal(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+              aria-hidden="true"
+            />
+
+            <div className="relative w-full max-w-xl bg-e22-card border border-zinc-700 rounded-3xl p-6 shadow-2xl z-10 space-y-5 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-emerald-400">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white uppercase tracking-tight">
+                      Horarios & Tarifas Oficiales
+                    </h3>
+                    <p className="text-[11px] text-zinc-400 font-mono">E22 GYM TRAINING CENTER</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowHorariosModal(false)}
+                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Horarios */}
+              <div className="space-y-2.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5" /> Días y Horarios de Apertura
+                </h4>
+                <div className="space-y-2">
+                  {(configuracion?.horarios || [
+                    { dia: 'Lunes a Viernes', apertura: '07:00', cierre: '22:00', turnos: 'Musculación continua y clases funcionales' },
+                    { dia: 'Sábados', apertura: '09:00', cierre: '14:00', turnos: 'Open Gym y acondicionamiento' },
+                    { dia: 'Domingos y Feriados', apertura: 'Cerrado', cierre: '', turnos: 'Descanso muscular' },
+                  ]).map((h, i) => (
+                    <div key={i} className="p-3 rounded-xl bg-e22-bg border border-zinc-800/80 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">{h.dia}</span>
+                        <span className="text-xs font-mono font-bold text-emerald-400">
+                          {h.apertura === 'Cerrado' ? 'Cerrado' : `${h.apertura} a ${h.cierre}`}
+                        </span>
+                      </div>
+                      {h.turnos && (
+                        <p className="text-[11px] text-zinc-400 font-sans leading-tight">{h.turnos}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tarifas */}
+              <div className="space-y-2.5 pt-2 border-t border-zinc-800">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> Tarifas Vigentes
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="p-3 rounded-xl bg-e22-bg border border-zinc-800 text-center">
+                    <p className="text-[10px] uppercase font-bold text-zinc-500">Cuota Mensual</p>
+                    <p className="text-base font-black font-mono text-white mt-0.5">
+                      ${Number(configuracion?.precios?.cuota_mensual || 25000).toLocaleString('es-AR')}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-e22-bg border border-zinc-800 text-center">
+                    <p className="text-[10px] uppercase font-bold text-zinc-500">Pase Semanal</p>
+                    <p className="text-base font-black font-mono text-white mt-0.5">
+                      ${Number(configuracion?.precios?.pase_semanal || 12000).toLocaleString('es-AR')}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-e22-bg border border-zinc-800 text-center">
+                    <p className="text-[10px] uppercase font-bold text-zinc-500">Pase Diario</p>
+                    <p className="text-base font-black font-mono text-white mt-0.5">
+                      ${Number(configuracion?.precios?.pase_diario || 3500).toLocaleString('es-AR')}
+                    </p>
+                  </div>
+                </div>
+                {configuracion?.precios?.descripcion && (
+                  <p className="text-[11px] text-zinc-400 italic pt-1">
+                    {configuracion.precios.descripcion}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowHorariosModal(false)}
+                  className="w-full py-2.5 bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-xl transition"
+                >
+                  Entendido, Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
