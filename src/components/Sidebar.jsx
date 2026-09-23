@@ -19,7 +19,10 @@ import {
   CheckCircle2,
   Clock,
   Sliders,
+  Home,
+  User,
 } from 'lucide-react';
+import LiquidGlassNav from './LiquidGlassNav';
 
 export default function Sidebar({ user, activeTab, onTabChange }) {
   const pathname = usePathname();
@@ -337,6 +340,27 @@ export default function Sidebar({ user, activeTab, onTabChange }) {
       <aside className="hidden lg:flex w-64 bg-e22-surface border-r border-e22-border flex-col shrink-0 min-h-screen">
         {navContent}
       </aside>
+
+      {/* ================= 4. BARRA INFERIOR MÓVIL "LIQUID GLASS" (APPLE / INSTAGRAM) ================= */}
+      <LiquidGlassNav
+        items={
+          isProfesor
+            ? [
+                { id: 'socios', label: 'Socios', icon: Users, href: '/dashboard/profesor' },
+                { id: 'rutinas', label: 'Rutinas', icon: Dumbbell, href: '/dashboard/profesor/rutinas' },
+                { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/profesor/pagos' },
+                { id: 'config', label: 'Horarios', icon: Clock, href: '/dashboard/profesor/configuracion' },
+                { id: 'menu', label: 'Menú', icon: User, onClick: () => setIsMobileOpen((prev) => !prev), isActive: isMobileOpen },
+              ]
+            : [
+                { id: 'inicio', label: 'Inicio', icon: Home, href: '/dashboard/alumno' },
+                { id: 'rutina', label: 'Rutina', icon: Dumbbell, href: '/dashboard/alumno/rutina' },
+                { id: 'progreso', label: 'Cargas', icon: BarChart3, href: '/dashboard/alumno/progreso' },
+                { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/alumno/pagos' },
+                { id: 'menu', label: 'Menú', icon: User, onClick: () => setIsMobileOpen((prev) => !prev), isActive: isMobileOpen },
+              ]
+        }
+      />
     </>
   );
 }

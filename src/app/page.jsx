@@ -27,10 +27,12 @@ import {
   Clock,
   DollarSign,
   X,
+  Home,
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
 import MaskedHeading from '@/components/MaskedHeading';
 import Navigation2 from '@/components/Navigation2';
+import LiquidGlassNav from '@/components/LiquidGlassNav';
 
 export default function AccessPortalPage() {
   const router = useRouter();
@@ -48,6 +50,55 @@ export default function AccessPortalPage() {
       })
       .catch((err) => console.error('Error fetching config on landing:', err));
   }, []);
+
+  // Ítems para barra móvil inferior Liquid Glass
+  const landingMobileItems = [
+    {
+      id: 'inicio',
+      label: 'Inicio',
+      icon: Home,
+      onClick: () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      isActive: true,
+    },
+    {
+      id: 'horarios',
+      label: 'Horarios',
+      icon: Clock,
+      onClick: () => setShowHorariosModal(true),
+      isActive: showHorariosModal,
+    },
+    {
+      id: 'tarifas',
+      label: 'Tarifas',
+      icon: DollarSign,
+      onClick: () => setShowHorariosModal(true),
+      isActive: false,
+    },
+    {
+      id: 'ingreso',
+      label: 'Ingresar',
+      icon: User,
+      onClick: () => {
+        setActiveTab('signin');
+        const formEl = document.getElementById('auth-form-card');
+        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+      },
+      isActive: activeTab === 'signin' && !showHorariosModal,
+    },
+    {
+      id: 'registro',
+      label: 'Registro',
+      icon: Sparkles,
+      onClick: () => {
+        setActiveTab('register');
+        const formEl = document.getElementById('auth-form-card');
+        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+      },
+      isActive: activeTab === 'register' && !showHorariosModal,
+    },
+  ];
 
   // Formulario Sign In
   const [identifier, setIdentifier] = useState('');
@@ -189,9 +240,9 @@ export default function AccessPortalPage() {
       />
 
       {/* 2. ÁREA CENTRAL HERO + FORMULARIO */}
-      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center p-4 sm:p-8 lg:p-12 pt-24 sm:pt-28 lg:pt-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
+      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center p-4 sm:p-8 lg:p-12 pt-24 sm:pt-28 lg:pt-32 pb-28 sm:pb-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
         {/* HERO BRANDING */}
-        <div className="max-w-md w-full space-y-4 text-center xl:text-left">
+        <div id="hero-branding" className="max-w-md w-full space-y-4 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>CENTRO DE ALTO RENDIMIENTO</span>
@@ -252,7 +303,7 @@ export default function AccessPortalPage() {
         </div>
 
         {/* 3. TARJETA DE ACCESO / REGISTRO DERECHA */}
-        <div className={`w-full ${activeTab === 'register' ? 'max-w-lg' : 'max-w-md'} bg-e22-card border border-e22-border rounded-2xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all duration-300`}>
+        <div id="auth-form-card" className={`w-full ${activeTab === 'register' ? 'max-w-lg' : 'max-w-md'} bg-e22-card border border-e22-border rounded-2xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all duration-300`}>
           {/* Pestañas SIGN IN / REGISTER */}
           <div className="flex bg-e22-bg p-1 rounded-xl border border-e22-border">
             <button
@@ -745,6 +796,9 @@ export default function AccessPortalPage() {
           </div>
         )}
       </main>
+
+      {/* 3. BARRA INFERIOR MÓVIL LIQUID GLASS ESTILO APPLE / INSTAGRAM */}
+      <LiquidGlassNav items={landingMobileItems} />
     </div>
   );
 }

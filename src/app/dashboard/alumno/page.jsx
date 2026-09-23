@@ -87,7 +87,7 @@ export default function AlumnoDashboardPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 pb-28 lg:pb-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
         {/* Cabecera */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-e22-border/80 pb-5">
           <div>

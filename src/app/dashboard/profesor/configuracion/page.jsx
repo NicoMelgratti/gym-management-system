@@ -163,7 +163,7 @@ export default function ProfesorConfiguracionPage() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-e22-bg text-zinc-100">
       <Sidebar user={currentUser} />
 
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto space-y-6">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-28 lg:pb-8 max-w-6xl w-full mx-auto space-y-6">
         {/* Cabecera de Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-e22-border pb-5">
           <div>
