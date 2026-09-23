@@ -17,6 +17,8 @@ import {
   Eye,
   Home,
   User,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import LiquidGlassNav from './LiquidGlassNav';
 
@@ -319,6 +321,35 @@ export default function Sidebar({ user }) {
                     <span>Ir a Vista Alumno</span>
                   </Link>
                 )}
+                {/* Acceso a Coach Virtual IA */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (typeof window !== 'undefined') {
+                      window.dispatchEvent(new CustomEvent('e22-open-coach'));
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-zinc-900 border border-emerald-500/30 text-xs font-bold text-white shadow-lg active:scale-95 transition group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-black text-white flex items-center gap-1.5">
+                        Coach Virtual E22
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 rounded">
+                          GEMINI IA
+                        </span>
+                      </p>
+                      <p className="text-[10px] text-zinc-400 font-mono">
+                        Dudas de rutina, técnica y RIR
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+                </button>
               </div>
 
               {/* Botón Logout */}

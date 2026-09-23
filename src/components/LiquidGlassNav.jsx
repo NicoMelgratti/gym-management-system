@@ -15,7 +15,7 @@ export default function LiquidGlassNav({
   return (
     <nav
       aria-label="Navegación móvil"
-      className={`lg:hidden fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] ${className}`}
+      className={`lg:hidden fixed bottom-[max(0.875rem,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] ${className}`}
     >
       {/* Contenedor Cápsula Liquid Glass */}
       <div className="relative flex items-center justify-between p-1.5 rounded-full bg-black/65 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_-1px_1px_rgba(0,0,0,0.6)]">

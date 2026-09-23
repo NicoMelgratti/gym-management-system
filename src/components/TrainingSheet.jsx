@@ -329,71 +329,105 @@ export default function TrainingSheet({
           </div>
         </div>
 
-        {/* CUADRÍCULA DE 30 CASILLAS (Fila 1: 1 a 15, Fila 2: 16 a 30) IDÉNTICA A LA FOTO */}
-        <div className="overflow-x-auto w-full md:w-auto">
+        {/* CUADRÍCULA DE 30 CASILLAS OPTIMIZADA PARA MOBILE Y DESKTOP */}
+        <div className="w-full md:w-auto">
           <div
-            className={`border rounded-lg p-1.5 inline-block ${
+            className={`border rounded-xl p-2 inline-block w-full sm:w-auto ${
               isPrint ? 'bg-white border-zinc-400' : 'bg-[#09090b] border-[#272731]'
             }`}
           >
-            {/* Fila 1: 1 al 15 */}
-            <div
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(15, minmax(0, 1fr))' }}
-              className="gap-1 text-[11px] font-mono text-center mb-1"
-            >
-              {Array.from({ length: 15 }, (_, i) => i + 1).map((diaNum) => {
-                const checked = setAsistencias.has(diaNum);
-                return (
-                  <button
-                    key={diaNum}
-                    type="button"
-                    disabled={!isInteractive}
-                    onClick={() => isInteractive && onToggleAsistencia && onToggleAsistencia(diaNum)}
-                    className={`w-6 h-6 flex items-center justify-center rounded border font-bold transition ${
-                      checked
-                        ? isPrint
-                          ? 'bg-zinc-700 text-white border-zinc-800'
-                          : 'bg-zinc-300 text-zinc-950 border-white shadow-sm font-black'
-                        : isPrint
-                        ? 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:bg-zinc-200'
-                        : 'bg-[#18181f] text-zinc-400 border-zinc-800 hover:border-zinc-500 hover:text-white'
-                    } ${isInteractive ? 'cursor-pointer active:scale-95' : 'cursor-default'}`}
-                    title={`Día ${diaNum} - ${checked ? 'Completado' : 'Pendiente'}`}
-                  >
-                    {diaNum}
-                  </button>
-                );
-              })}
+            {/* VISTA MÓVIL: 3 FILAS DE 10 DÍAS (FÁCIL DE TOCAR CON EL PULGAR, SIN SCROLL) */}
+            <div className="sm:hidden space-y-1.5 w-full">
+              {[0, 10, 20].map((offset) => (
+                <div
+                  key={`row-${offset}`}
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(10, minmax(0, 1fr))' }}
+                  className="gap-1 text-[11px] font-mono text-center"
+                >
+                  {Array.from({ length: 10 }, (_, i) => i + 1 + offset).map((diaNum) => {
+                    const checked = setAsistencias.has(diaNum);
+                    return (
+                      <button
+                        key={diaNum}
+                        type="button"
+                        disabled={!isInteractive}
+                        onClick={() => isInteractive && onToggleAsistencia && onToggleAsistencia(diaNum)}
+                        className={`h-7 w-full flex items-center justify-center rounded-lg border font-bold transition ${
+                          checked
+                            ? 'bg-zinc-200 text-zinc-950 border-white shadow-sm font-black'
+                            : 'bg-[#18181f] text-zinc-400 border-zinc-800 hover:border-zinc-500 hover:text-white'
+                        } ${isInteractive ? 'cursor-pointer active:scale-90' : 'cursor-default'}`}
+                        title={`Día ${diaNum} - ${checked ? 'Completado' : 'Pendiente'}`}
+                      >
+                        {diaNum}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
 
-            {/* Fila 2: 16 al 30 */}
-            <div
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(15, minmax(0, 1fr))' }}
-              className="gap-1 text-[11px] font-mono text-center"
-            >
-              {Array.from({ length: 15 }, (_, i) => i + 16).map((diaNum) => {
-                const checked = setAsistencias.has(diaNum);
-                return (
-                  <button
-                    key={diaNum}
-                    type="button"
-                    disabled={!isInteractive}
-                    onClick={() => isInteractive && onToggleAsistencia && onToggleAsistencia(diaNum)}
-                    className={`w-6 h-6 flex items-center justify-center rounded border font-bold transition ${
-                      checked
-                        ? isPrint
-                          ? 'bg-zinc-700 text-white border-zinc-800'
-                          : 'bg-zinc-300 text-zinc-950 border-white shadow-sm font-black'
-                        : isPrint
-                        ? 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:bg-zinc-200'
-                        : 'bg-[#18181f] text-zinc-400 border-zinc-800 hover:border-zinc-500 hover:text-white'
-                    } ${isInteractive ? 'cursor-pointer active:scale-95' : 'cursor-default'}`}
-                    title={`Día ${diaNum} - ${checked ? 'Completado' : 'Pendiente'}`}
-                  >
-                    {diaNum}
-                  </button>
-                );
-              })}
+            {/* VISTA TABLET / ESCRITORIO / IMPRESIÓN: 2 FILAS DE 15 DÍAS (IDÉNTICO A PLANILLA FÍSICA) */}
+            <div className="hidden sm:block">
+              {/* Fila 1: 1 al 15 */}
+              <div
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(15, minmax(0, 1fr))' }}
+                className="gap-1 text-[11px] font-mono text-center mb-1"
+              >
+                {Array.from({ length: 15 }, (_, i) => i + 1).map((diaNum) => {
+                  const checked = setAsistencias.has(diaNum);
+                  return (
+                    <button
+                      key={diaNum}
+                      type="button"
+                      disabled={!isInteractive}
+                      onClick={() => isInteractive && onToggleAsistencia && onToggleAsistencia(diaNum)}
+                      className={`w-6 h-6 flex items-center justify-center rounded border font-bold transition ${
+                        checked
+                          ? isPrint
+                            ? 'bg-zinc-700 text-white border-zinc-800'
+                            : 'bg-zinc-300 text-zinc-950 border-white shadow-sm font-black'
+                          : isPrint
+                          ? 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:bg-zinc-200'
+                          : 'bg-[#18181f] text-zinc-400 border-zinc-800 hover:border-zinc-500 hover:text-white'
+                      } ${isInteractive ? 'cursor-pointer active:scale-95' : 'cursor-default'}`}
+                      title={`Día ${diaNum} - ${checked ? 'Completado' : 'Pendiente'}`}
+                    >
+                      {diaNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Fila 2: 16 al 30 */}
+              <div
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(15, minmax(0, 1fr))' }}
+                className="gap-1 text-[11px] font-mono text-center"
+              >
+                {Array.from({ length: 15 }, (_, i) => i + 16).map((diaNum) => {
+                  const checked = setAsistencias.has(diaNum);
+                  return (
+                    <button
+                      key={diaNum}
+                      type="button"
+                      disabled={!isInteractive}
+                      onClick={() => isInteractive && onToggleAsistencia && onToggleAsistencia(diaNum)}
+                      className={`w-6 h-6 flex items-center justify-center rounded border font-bold transition ${
+                        checked
+                          ? isPrint
+                            ? 'bg-zinc-700 text-white border-zinc-800'
+                            : 'bg-zinc-300 text-zinc-950 border-white shadow-sm font-black'
+                          : isPrint
+                          ? 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:bg-zinc-200'
+                          : 'bg-[#18181f] text-zinc-400 border-zinc-800 hover:border-zinc-500 hover:text-white'
+                      } ${isInteractive ? 'cursor-pointer active:scale-95' : 'cursor-default'}`}
+                      title={`Día ${diaNum} - ${checked ? 'Completado' : 'Pendiente'}`}
+                    >
+                      {diaNum}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

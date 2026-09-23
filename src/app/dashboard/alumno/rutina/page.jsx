@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TrainingSheet from '@/components/TrainingSheet';
-import AICoachWidget from '@/components/AICoachWidget';
 import { parsePlanillaData } from '@/lib/rutinas';
 import { generarRutinaPDF } from '@/lib/pdfGenerator';
 import {
@@ -307,9 +306,6 @@ export default function AlumnoRutinaPage() {
             </div>
           </div>
         )}
-
-        {/* COACH VIRTUAL INTELIGENTE (GEMINI IA) */}
-        <AICoachWidget alumno={alumnoData || currentUser} rutina={rutinaData} />
       </main>
     </div>
   );
