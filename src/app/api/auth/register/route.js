@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   try {
@@ -49,7 +50,10 @@ export async function POST(request) {
       );
     }
 
-    // Insertar nuevo usuario con rol 'usuario' y habilitado = false (pendiente de pago y confirmación)
+    // Cifrar la contraseña con bcrypt (10 rondas de salt)
+    const hashedPassword = await bcrypt.hash(cleanPass, 10);
+
+    // Insertar nuevo usuario con contraseña cifrada
     const insertRes = await query(
       `INSERT INTO e22.usuarios (
         username, dni, nombre, apellido, email, telefono, password,
@@ -63,7 +67,7 @@ export async function POST(request) {
         cleanApellido,
         email || `${cleanDni}@e22gym.com`,
         telefono,
-        cleanPass,
+        hashedPassword,
         alergias || 'Ninguna',
         patologias || 'Ninguna',
         Number(dias_asistencia) || 3,

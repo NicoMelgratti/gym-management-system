@@ -13,7 +13,7 @@ INSERT INTO e22.usuarios (
   'E22',
   'admin@e22gym.com',
   '+5491100000000',
-  'admin123',
+  '$2b$10$VAk9Diob/zVX7azZXtYZaOlHXbkIIPEfxLH/UU55yI8RoUm2HUmky',
   'profesor',
   CURRENT_DATE + INTERVAL '365 days',
   'al_dia',

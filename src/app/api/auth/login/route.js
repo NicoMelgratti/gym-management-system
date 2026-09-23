@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { query, diasRestantes, estadoCuota } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   try {
@@ -24,7 +25,16 @@ export async function POST(request) {
 
       if (adminRes.rows.length > 0) {
         const admin = adminRes.rows[0];
-        if (admin.password === cleanPass) {
+        let isAdminMatch = await bcrypt.compare(cleanPass, admin.password).catch(() => false);
+
+        // Migración automática si aún tuviera contraseña en texto plano
+        if (!isAdminMatch && admin.password === cleanPass) {
+          isAdminMatch = true;
+          const newHash = await bcrypt.hash(cleanPass, 10);
+          await query(`UPDATE e22.usuarios SET password = $1 WHERE id = $2;`, [newHash, admin.id]);
+        }
+
+        if (isAdminMatch) {
           return NextResponse.json({
             ok: true,
             user: {
@@ -61,8 +71,17 @@ export async function POST(request) {
 
     const user = userRes.rows[0];
 
-    // Verificar contraseña del socio
-    if (user.password !== cleanPass) {
+    // Verificar contraseña del socio con bcrypt
+    let isUserMatch = await bcrypt.compare(cleanPass, user.password).catch(() => false);
+
+    // Migración automática si aún tuviera contraseña en texto plano
+    if (!isUserMatch && user.password === cleanPass) {
+      isUserMatch = true;
+      const newHash = await bcrypt.hash(cleanPass, 10);
+      await query(`UPDATE e22.usuarios SET password = $1 WHERE id = $2;`, [newHash, user.id]);
+    }
+
+    if (!isUserMatch) {
       return NextResponse.json(
         { ok: false, error: 'Contraseña incorrecta. Por favor, verifica tus datos.' },
         { status: 401 }
