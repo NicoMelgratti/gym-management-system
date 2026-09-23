@@ -162,12 +162,12 @@ export default function AlumnoProgresoPage() {
   });
 
   return (
-    <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col lg:flex-row font-sans selection:bg-white selection:text-black">
-      {/* 1. SIDEBAR */}
+    <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col font-sans selection:bg-white selection:text-black relative">
+      {/* 1. NAVEGACIÓN SUPERIOR GLASS + MÓVIL LIQUID GLASS */}
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 pb-28 lg:pb-10 space-y-6 overflow-y-auto max-w-7xl w-full min-w-0">
+      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 pt-24 sm:pt-28 pb-28 sm:pb-32 space-y-6 max-w-7xl w-full mx-auto min-w-0">
         {/* Cabecera */}
         <div className="space-y-3 border-b border-e22-border/80 pb-5">
           <Link
