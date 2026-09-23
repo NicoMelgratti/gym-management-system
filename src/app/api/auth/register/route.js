@@ -80,11 +80,17 @@ export async function POST(request) {
     newUser.nombre_completo = `${newUser.nombre} ${newUser.apellido || ''}`.trim();
     newUser.dias_restantes = 0;
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       ok: true,
       message: '¡Registro completado en E22 GYM! Tu cuenta ha sido creada exitosamente.',
       user: newUser,
     });
+    res.cookies.set('e22_role', 'alumno', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+    return res;
   } catch (error) {
     console.error('Error en /api/auth/register:', error);
     return NextResponse.json(

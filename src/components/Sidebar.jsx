@@ -32,8 +32,9 @@ export default function Sidebar({ user }) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('e22_user');
       localStorage.removeItem('zinerva_user');
+      document.cookie = 'e22_role=; path=/; max-age=0;';
     }
-    router.push('/');
+    router.replace('/');
   };
 
   // Consultar pagos pendientes si es profesor
@@ -46,7 +47,7 @@ export default function Sidebar({ user }) {
             setPendingPaymentsCount(data.pagos.length);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [isProfesor, pathname]);
 
@@ -119,31 +120,31 @@ export default function Sidebar({ user }) {
   // Ítems para la barra inferior móvil Liquid Glass
   const mobileNavItems = isProfesor
     ? [
-        { id: 'socios', label: 'Socios', icon: Users, href: '/dashboard/profesor' },
-        { id: 'rutinas', label: 'Rutinas', icon: Dumbbell, href: '/dashboard/profesor/rutinas' },
-        { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/profesor/pagos' },
-        { id: 'config', label: 'Horarios', icon: Clock, href: '/dashboard/profesor/configuracion' },
-        {
-          id: 'menu',
-          label: 'Menú',
-          icon: User,
-          onClick: () => setMobileMenuOpen((prev) => !prev),
-          isActive: mobileMenuOpen,
-        },
-      ]
+      { id: 'socios', label: 'Socios', icon: Users, href: '/dashboard/profesor' },
+      { id: 'rutinas', label: 'Rutinas', icon: Dumbbell, href: '/dashboard/profesor/rutinas' },
+      { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/profesor/pagos' },
+      { id: 'config', label: 'Horarios', icon: Clock, href: '/dashboard/profesor/configuracion' },
+      {
+        id: 'menu',
+        label: 'Menú',
+        icon: User,
+        onClick: () => setMobileMenuOpen((prev) => !prev),
+        isActive: mobileMenuOpen,
+      },
+    ]
     : [
-        { id: 'inicio', label: 'Inicio', icon: Home, href: '/dashboard/alumno' },
-        { id: 'rutina', label: 'Rutina', icon: Dumbbell, href: '/dashboard/alumno/rutina' },
-        { id: 'progreso', label: 'Cargas', icon: BarChart3, href: '/dashboard/alumno/progreso' },
-        { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/alumno/pagos' },
-        {
-          id: 'menu',
-          label: 'Menú',
-          icon: User,
-          onClick: () => setMobileMenuOpen((prev) => !prev),
-          isActive: mobileMenuOpen,
-        },
-      ];
+      { id: 'inicio', label: 'Inicio', icon: Home, href: '/dashboard/alumno' },
+      { id: 'rutina', label: 'Rutina', icon: Dumbbell, href: '/dashboard/alumno/rutina' },
+      { id: 'progreso', label: 'Cargas', icon: BarChart3, href: '/dashboard/alumno/progreso' },
+      { id: 'pagos', label: 'Pagos', icon: CreditCard, href: '/dashboard/alumno/pagos' },
+      {
+        id: 'menu',
+        label: 'Menú',
+        icon: User,
+        onClick: () => setMobileMenuOpen((prev) => !prev),
+        isActive: mobileMenuOpen,
+      },
+    ];
 
   const homeHref = isProfesor ? '/dashboard/profesor' : '/dashboard/alumno';
   const roleLabel = isProfesor ? 'PROFESOR' : 'SOCIO';
@@ -158,18 +159,17 @@ export default function Sidebar({ user }) {
           {/* LOGO & BRAND */}
           <Link href={homeHref} className="flex items-center gap-2.5 group focus:outline-none pl-1">
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden bg-black border border-white/20 shrink-0 group-hover:scale-105 transition-transform p-0.5 shadow-md">
-              <Image src="/logo.png" alt="E22 Gym" fill className="object-contain" priority />
+              <Image src="/logo.png" alt="e22 Gym" fill className="object-contain" priority />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs sm:text-sm font-black tracking-widest text-white block leading-none">
-                E22 GYM
+                e22 GYM
               </span>
               <span
-                className={`hidden sm:inline-block text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border ${
-                  isProfesor
-                    ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800/50'
-                    : 'text-cyan-400 bg-cyan-950/80 border-cyan-800/50'
-                }`}
+                className={`hidden sm:inline-block text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border ${isProfesor
+                  ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800/50'
+                  : 'text-cyan-400 bg-cyan-950/80 border-cyan-800/50'
+                  }`}
               >
                 {roleLabel}
               </span>
@@ -184,11 +184,10 @@ export default function Sidebar({ user }) {
                 <Link
                   key={link.id}
                   href={link.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 relative ${
-                    link.isActive
-                      ? 'bg-white/15 text-white font-bold border border-white/15 shadow-sm'
-                      : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 relative ${link.isActive
+                    ? 'bg-white/15 text-white font-bold border border-white/15 shadow-sm'
+                    : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                    }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{link.label}</span>
@@ -273,11 +272,10 @@ export default function Sidebar({ user }) {
                   </div>
                 </div>
                 <span
-                  className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded-full border ${
-                    isProfesor
-                      ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800/50'
-                      : 'text-cyan-400 bg-cyan-950/80 border-cyan-800/50'
-                  }`}
+                  className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded-full border ${isProfesor
+                    ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800/50'
+                    : 'text-cyan-400 bg-cyan-950/80 border-cyan-800/50'
+                    }`}
                 >
                   {roleLabel}
                 </span>
@@ -292,11 +290,10 @@ export default function Sidebar({ user }) {
                       key={link.id}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
-                        link.isActive
-                          ? 'bg-white text-zinc-950 shadow-md'
-                          : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
-                      }`}
+                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${link.isActive
+                        ? 'bg-white text-zinc-950 shadow-md'
+                        : 'text-zinc-300 hover:text-white hover:bg-zinc-900'
+                        }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon className="w-4 h-4" />

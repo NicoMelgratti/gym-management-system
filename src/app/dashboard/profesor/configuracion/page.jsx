@@ -159,6 +159,8 @@ export default function ProfesorConfiguracionPage() {
     setHorarios(horarios.filter((_, i) => i !== index));
   };
 
+  if (!currentUser) return null;
+
   return (
     <div className="flex flex-col min-h-screen bg-e22-bg text-zinc-100 relative">
       <Sidebar user={currentUser} />

@@ -161,9 +161,12 @@ export default function AccessPortalPage() {
         throw new Error(data.error || 'Credenciales inválidas.');
       }
 
+      const isProfesor = data.user.rol === 'profesor' || data.user.rol === 'admin';
+      const roleName = isProfesor ? 'profesor' : 'alumno';
       localStorage.setItem('e22_user', JSON.stringify(data.user));
+      document.cookie = `e22_role=${roleName}; path=/; max-age=2592000; SameSite=Lax`;
 
-      if (data.user.rol === 'profesor') {
+      if (isProfesor) {
         router.push('/dashboard/profesor');
       } else {
         router.push('/dashboard/alumno');
@@ -226,6 +229,7 @@ export default function AccessPortalPage() {
 
       setSuccessRegister('¡Registro completado con éxito! Ingresando a tu portal de socio...');
       localStorage.setItem('e22_user', JSON.stringify(data.user));
+      document.cookie = 'e22_role=alumno; path=/; max-age=2592000; SameSite=Lax';
 
       setTimeout(() => {
         router.push('/dashboard/alumno');

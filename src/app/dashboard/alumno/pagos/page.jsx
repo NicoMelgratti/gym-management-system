@@ -135,6 +135,8 @@ export default function AlumnoPagosPage() {
   const isAlDia = socioData?.estado_pago === 'al_dia' && dias > 0;
   const isPendiente = socioData?.estado_pago === 'pendiente';
 
+  if (!currentUser) return null;
+
   return (
     <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col font-sans selection:bg-white selection:text-black relative">
       {/* 1. NAVEGACIÓN SUPERIOR GLASS + MÓVIL LIQUID GLASS */}

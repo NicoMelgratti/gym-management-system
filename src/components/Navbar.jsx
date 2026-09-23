@@ -12,8 +12,9 @@ export default function Navbar({ user }) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('zinerva_user');
       localStorage.removeItem('e22_user');
+      document.cookie = 'e22_role=; path=/; max-age=0;';
     }
-    router.push('/');
+    router.replace('/');
   };
 
   return (
@@ -24,7 +25,7 @@ export default function Navbar({ user }) {
           <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-black border border-white/20 shadow-md group-hover:border-emerald-500 transition p-0.5">
             <Image
               src="/logo.png"
-              alt="E22 Gym Logo"
+              alt="e²² Gym Logo"
               fill
               className="object-contain"
               priority
@@ -32,7 +33,7 @@ export default function Navbar({ user }) {
           </div>
           <div>
             <span className="text-xl font-black tracking-widest text-white">
-              E22 <span className="text-rose-500">GYM</span>
+              e²² <span className="text-rose-500">GYM</span>
             </span>
             <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-bold">
               Centro de Entrenamiento
@@ -51,11 +52,10 @@ export default function Navbar({ user }) {
                 <p className="text-[10px] text-slate-400 font-mono">DNI: {user.dni}</p>
               </div>
               <span
-                className={`px-2.5 py-0.5 text-[10px] font-black uppercase rounded-full border ${
-                  user.rol_nombre === 'profesor'
-                    ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
-                    : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                }`}
+                className={`px-2.5 py-0.5 text-[10px] font-black uppercase rounded-full border ${user.rol_nombre === 'profesor'
+                  ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                  }`}
               >
                 {user.rol_nombre || 'Socio'}
               </span>

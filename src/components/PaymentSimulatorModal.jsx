@@ -85,31 +85,28 @@ export default function PaymentSimulatorModal({ alumno, onClose, onPaymentSucces
         <div className="flex gap-2 mt-5 p-1 bg-slate-800/80 rounded-xl border border-slate-700">
           <button
             onClick={() => setSelectedMethod('transferencia')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${
-              selectedMethod === 'transferencia'
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${selectedMethod === 'transferencia'
                 ? 'bg-rose-600 text-white shadow'
                 : 'text-slate-400 hover:text-white'
-            }`}
+              }`}
           >
             <Building2 className="w-4 h-4" /> Transferencia
           </button>
           <button
             onClick={() => setSelectedMethod('mercadopago')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${
-              selectedMethod === 'mercadopago'
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${selectedMethod === 'mercadopago'
                 ? 'bg-rose-600 text-white shadow'
                 : 'text-slate-400 hover:text-white'
-            }`}
+              }`}
           >
             <QrCode className="w-4 h-4" /> Mercado Pago / QR
           </button>
           <button
             onClick={() => setSelectedMethod('efectivo')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${
-              selectedMethod === 'efectivo'
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition ${selectedMethod === 'efectivo'
                 ? 'bg-rose-600 text-white shadow'
                 : 'text-slate-400 hover:text-white'
-            }`}
+              }`}
           >
             <Banknote className="w-4 h-4" /> Efectivo
           </button>
@@ -212,7 +209,7 @@ export default function PaymentSimulatorModal({ alumno, onClose, onPaymentSucces
             {loading ? 'Procesando simulación...' : 'Simular Pago y Activar Cuota Ahora'}
           </button>
           <p className="text-[11px] text-center text-slate-500">
-            Esta acción actualizará tu cuota en el esquema E22 a estado VERDE por 30 días adicionales.
+            Esta acción actualizará tu cuota en el esquema e²² a estado VERDE por 30 días adicionales.
           </p>
         </div>
       </div>

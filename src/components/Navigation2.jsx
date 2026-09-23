@@ -22,9 +22,9 @@ import {
 } from 'lucide-react';
 
 export default function Navigation2({
-  onSignInClick = () => {},
-  onRegisterClick = () => {},
-  onHorariosClick = () => {},
+  onSignInClick = () => { },
+  onRegisterClick = () => { },
+  onHorariosClick = () => { },
   configuracion = null,
 }) {
   const [activeDropdown, setActiveDropdown] = useState(null); // 'clases' | 'membresias' | 'centro' | null
@@ -58,11 +58,11 @@ export default function Navigation2({
           className="flex items-center gap-2.5 group focus:outline-none pl-1"
         >
           <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden bg-black border border-white/20 shrink-0 group-hover:scale-105 transition-transform p-0.5 shadow-md">
-            <Image src="/logo.png" alt="E22 Gym" fill className="object-contain" priority />
+            <Image src="/logo.png" alt="e²² Gym" fill className="object-contain" priority />
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xs sm:text-sm font-black tracking-widest text-white block leading-none">
-              E22 GYM
+              e²² GYM
             </span>
             <span className="hidden sm:inline-block text-[9px] font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded-full border border-emerald-800/50">
               CORE
@@ -78,17 +78,15 @@ export default function Navigation2({
               type="button"
               onClick={() => toggleDropdown('clases')}
               onMouseEnter={() => setActiveDropdown('clases')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
-                activeDropdown === 'clases'
-                  ? 'bg-white/10 text-white shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-white/5'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${activeDropdown === 'clases'
+                ? 'bg-white/10 text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                }`}
             >
               <span>Horarios & Clases</span>
               <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeDropdown === 'clases' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
-                }`}
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'clases' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
+                  }`}
               />
             </button>
           </div>
@@ -99,17 +97,15 @@ export default function Navigation2({
               type="button"
               onClick={() => toggleDropdown('membresias')}
               onMouseEnter={() => setActiveDropdown('membresias')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
-                activeDropdown === 'membresias'
-                  ? 'bg-white/10 text-white shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-white/5'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${activeDropdown === 'membresias'
+                ? 'bg-white/10 text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                }`}
             >
               <span>Tarifas & Cuota</span>
               <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeDropdown === 'membresias' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
-                }`}
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'membresias' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
+                  }`}
               />
             </button>
           </div>
@@ -120,17 +116,15 @@ export default function Navigation2({
               type="button"
               onClick={() => toggleDropdown('centro')}
               onMouseEnter={() => setActiveDropdown('centro')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
-                activeDropdown === 'centro'
-                  ? 'bg-white/10 text-white shadow-sm'
-                  : 'text-zinc-300 hover:text-white hover:bg-white/5'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${activeDropdown === 'centro'
+                ? 'bg-white/10 text-white shadow-sm'
+                : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                }`}
             >
               <span>Centro Elite</span>
               <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeDropdown === 'centro' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
-                }`}
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'centro' ? 'rotate-180 text-emerald-400' : 'text-zinc-400'
+                  }`}
               />
             </button>
           </div>
@@ -223,7 +217,7 @@ export default function Navigation2({
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-emerald-400" />
                     <h4 className="text-xs font-black uppercase tracking-wider text-white">
-                      Cronograma de Entrenamiento E22
+                      Cronograma de Entrenamiento e²²
                     </h4>
                   </div>
                   <button
@@ -340,7 +334,7 @@ export default function Navigation2({
                   <div className="flex items-center gap-2">
                     <Building className="w-4 h-4 text-emerald-400" />
                     <h4 className="text-xs font-black uppercase tracking-wider text-white">
-                      Centro de Alto Rendimiento E22
+                      Centro de Alto Rendimiento e²²
                     </h4>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">

@@ -37,7 +37,7 @@ export async function POST(request) {
         }
 
         if (isAdminMatch) {
-          return NextResponse.json({
+          const res = NextResponse.json({
             ok: true,
             user: {
               id: admin.id,
@@ -49,6 +49,12 @@ export async function POST(request) {
               habilitado: true,
             },
           });
+          res.cookies.set('e22_role', 'profesor', {
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30,
+            sameSite: 'lax',
+          });
+          return res;
         }
       }
 
@@ -93,7 +99,8 @@ export async function POST(request) {
     const dias = user.vencimiento_cuota ? diasRestantes(user.vencimiento_cuota) : 0;
     const estado = estadoCuota(user.vencimiento_cuota, user.habilitado);
 
-    return NextResponse.json({
+    const userRole = user.rol === 'profesor' || user.rol === 'admin' ? 'profesor' : 'alumno';
+    const res = NextResponse.json({
       ok: true,
       user: {
         id: user.id,
@@ -114,6 +121,12 @@ export async function POST(request) {
         dias_asistencia: user.dias_asistencia,
       },
     });
+    res.cookies.set('e22_role', userRole, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+    return res;
   } catch (error) {
     console.error('Error en /api/auth/login:', error);
     return NextResponse.json(

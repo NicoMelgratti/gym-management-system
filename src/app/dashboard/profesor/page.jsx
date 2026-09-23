@@ -259,19 +259,18 @@ export default function ProfessorDashboardPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.rol !== 'profesor') {
-          router.push('/dashboard/alumno');
+        if (parsed.rol !== 'profesor' && parsed.rol !== 'admin') {
+          router.replace('/dashboard/alumno');
           return;
         }
         setCurrentUser(parsed);
+        loadSocios();
       } catch (e) {
-        router.push('/');
+        router.replace('/');
       }
     } else {
-      router.push('/');
+      router.replace('/');
     }
-
-    loadSocios();
   }, []);
 
   const loadSocios = async () => {
@@ -465,6 +464,8 @@ export default function ProfessorDashboardPage() {
   };
 
   const diaActual = diasRutina[diaActivoIndex] || diasRutina[0];
+
+  if (!currentUser) return null;
 
   return (
     <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col font-sans selection:bg-white selection:text-black relative">

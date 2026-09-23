@@ -142,6 +142,8 @@ export default function AlumnoRutinaPage() {
 
   const isAlDia = alumnoData?.estado_pago === 'al_dia' || alumnoData?.habilitado;
 
+  if (!currentUser) return null;
+
   return (
     <div className="min-h-screen bg-e22-bg text-e22-text flex flex-col font-sans selection:bg-white selection:text-black relative">
       {/* 1. NAVEGACIÓN SUPERIOR GLASS + MÓVIL LIQUID GLASS */}
