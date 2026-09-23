@@ -35,6 +35,7 @@ import {
   Compass,
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
+import MaskedHeading from '@/components/MaskedHeading';
 import Navigation2 from '@/components/Navigation2';
 import LiquidGlassNav from '@/components/LiquidGlassNav';
 
@@ -257,40 +258,50 @@ export default function AccessPortalPage() {
         {/* ÁREA HERO + FORMULARIO */}
         <section id="inicio" className="flex flex-col xl:flex-row items-center justify-center px-4 sm:px-8 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-24 gap-8 lg:gap-16 max-w-6xl w-full mx-auto">
         {/* HERO BRANDING */}
-        <div id="hero-branding" className="max-w-md w-full space-y-4 text-center xl:text-left">
+        <div id="hero-branding" className="max-w-lg w-full space-y-5 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>CENTRO DE ALTO RENDIMIENTO</span>
+            <span>CENTRO DE ALTO RENDIMIENTO // SANTA FE</span>
           </div>
 
-          {/* LOGO OFICIAL HD HERO EN LUGAR DE TEXTO TIPOGRÁFICO */}
-          <div className="flex flex-col items-center xl:items-start gap-4 pt-1">
-            <div className="relative group cursor-pointer">
+          {/* COMBINACIÓN LOGO OFICIAL HD + LETRAS CON MASKEDHEADING (REACT BITS) */}
+          <div className="flex flex-col sm:flex-row items-center xl:items-start gap-4 sm:gap-6 pt-1">
+            {/* 1. EL LOGO OFICIAL EN HD */}
+            <div className="relative group shrink-0 cursor-pointer">
               {/* Resplandor ambiental de alta fidelidad */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-emerald-500/20 via-white/10 to-emerald-500/20 rounded-[32px] blur-2xl opacity-60 group-hover:opacity-90 transition duration-700 pointer-events-none" />
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500/25 via-white/10 to-emerald-500/25 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500 group-hover:scale-105 pointer-events-none" />
 
               {/* Marco del Logotipo Oficial en HD */}
-              <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-[28px] overflow-hidden bg-black border border-white/20 shadow-2xl p-2.5 transition-all duration-500 group-hover:scale-[1.03] group-hover:border-white/50">
+              <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden bg-black border border-white/25 shadow-2xl p-2 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-white/50">
                 <Image
                   src="/logo.png"
-                  alt="E22 Gym Logotipo Oficial HD"
+                  alt="E22 Gym Logo Oficial HD"
                   fill
-                  className="object-contain p-2"
+                  className="object-contain p-1.5"
                   priority
                 />
               </div>
             </div>
 
-            <div className="space-y-1 text-center xl:text-left">
-              <div className="flex items-center justify-center xl:justify-start gap-2">
-                <span className="text-2xl sm:text-3xl font-black tracking-widest text-white uppercase font-sans">
-                  E22 GYM
-                </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/60">
-                  SEDE SANTA FE
-                </span>
+            {/* 2. LAS LETRAS ANIMADAS CON MASKEDHEADING */}
+            <div className="space-y-1 flex-1 w-full text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-[10px] font-mono text-emerald-400 uppercase tracking-widest mb-1">
+                <span>MARCA OFICIAL</span>
               </div>
-              <h1 className="text-base sm:text-lg font-black tracking-[0.25em] text-zinc-400 font-mono">
+              <MaskedHeading
+                text="E22 GYM"
+                src="/gym-hero.png"
+                fillScale={1.35}
+                parallax={32}
+                drift={18}
+                reveal="rise"
+                trigger="view"
+                weight={900}
+                textScale={0.22}
+                align="inherit"
+                className="tracking-tight leading-none drop-shadow-2xl"
+              />
+              <h1 className="text-base sm:text-lg font-black tracking-[0.2em] text-zinc-400 font-mono uppercase">
                 TRAINING MANAGEMENT
               </h1>
             </div>
