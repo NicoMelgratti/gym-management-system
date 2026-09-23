@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, calcularEstadoPago, diasRestantes } from '@/lib/db';
+import { query, estadoCuota, diasRestantes } from '@/lib/db';
 
 export async function GET(request, { params }) {
   try {

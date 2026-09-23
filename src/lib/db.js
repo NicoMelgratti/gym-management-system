@@ -7,9 +7,14 @@ export function getPool() {
     const connectionString =
       process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/postgres';
 
+    const isNeonOrCloud =
+      connectionString.includes('neon.tech') ||
+      connectionString.includes('sslmode=require') ||
+      process.env.NODE_ENV === 'production';
+
     pool = new Pool({
       connectionString,
-      ssl: false,
+      ssl: isNeonOrCloud ? { rejectUnauthorized: false } : false,
     });
 
     pool.on('connect', (client) => {

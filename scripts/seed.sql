@@ -1,61 +1,45 @@
--- Datos iniciales para pruebas en Zinerva Gym (Esquema E22)
+-- ==============================================================================
+-- Datos Iniciales / Semilla para E22 GYM (Solo Administrador y Configuración)
+-- ==============================================================================
 
--- 1. Insertar roles si no existen
-INSERT INTO "E22".roles (id, nombre) VALUES 
-(1, 'alumno'),
-(2, 'profesor')
-ON CONFLICT (id) DO UPDATE SET nombre = EXCLUDED.nombre;
+-- 1. Insertar ÚNICAMENTE al profesor / admin inicial
+INSERT INTO e22.usuarios (
+  username, dni, nombre, apellido, email, telefono, password,
+  rol, vencimiento_cuota, estado_pago, habilitado, alergias, patologias, primer_pago_realizado
+) VALUES (
+  'e22gym',
+  'e22gym',
+  'Profesor',
+  'E22',
+  'admin@e22gym.com',
+  '+5491100000000',
+  'admin123',
+  'profesor',
+  CURRENT_DATE + INTERVAL '365 days',
+  'al_dia',
+  true,
+  'Ninguna',
+  'Ninguna',
+  true
+)
+ON CONFLICT (username) DO UPDATE SET
+  password = EXCLUDED.password,
+  rol = EXCLUDED.rol,
+  habilitado = EXCLUDED.habilitado;
 
--- 2. Insertar Usuarios
--- Profesor
-INSERT INTO "E22".usuarios (dni, nombre, email, password, rol_id, vencimiento_cuota, estado_pago)
+-- 2. Configuración general por defecto del gimnasio
+INSERT INTO e22.configuracion (clave, valor)
 VALUES 
-('11111111', 'Prof. Carlos Rossi', 'carlos.rossi@zinervagym.com', 'admin123', 2, NULL, 'verde')
-ON CONFLICT (dni) DO UPDATE SET nombre = EXCLUDED.nombre;
-
--- Alumnos con diferentes estados de cuota
-INSERT INTO "E22".usuarios (dni, nombre, email, password, rol_id, vencimiento_cuota, estado_pago)
-VALUES 
-('22222222', 'Martín Pérez', 'martin.perez@email.com', '123456', 1, CURRENT_DATE + INTERVAL '22 days', 'verde'),
-('33333333', 'Sofía Gómez', 'sofia.gomez@email.com', '123456', 1, CURRENT_DATE + INTERVAL '3 days', 'amarillo'),
-('44444444', 'Lucas Álvarez', 'lucas.alvarez@email.com', '123456', 1, CURRENT_DATE - INTERVAL '6 days', 'rojo'),
-('55555555', 'Valentina Díaz', 'valen.diaz@email.com', '123456', 1, CURRENT_DATE + INTERVAL '15 days', 'verde')
-ON CONFLICT (dni) DO UPDATE SET 
-  nombre = EXCLUDED.nombre,
-  vencimiento_cuota = EXCLUDED.vencimiento_cuota,
-  estado_pago = EXCLUDED.estado_pago;
-
--- 3. Insertar Rutinas iniciales
-INSERT INTO "E22".rutinas (usuario_id, profesor_id, titulo, detalles, fecha_creacion)
-SELECT u.id, p.id, 'Rutina de Hipertrofia 3 Días (Fuerza y Volumen)', 
-'Día 1 - Pecho y Tríceps:
-• Press Banca Plano: 4 series x 10 repeticiones
-• Press Inclinado con Mancuernas: 3 series x 12 repeticiones
-• Aperturas en Polea: 3 series x 15 repeticiones
-• Fondos en Paralelas: 3 series al fallo
-• Extensión de Tríceps en Polea: 4 series x 12 repeticiones
-
-Día 2 - Espalda y Bíceps:
-• Jalón al Pecho: 4 series x 10 repeticiones
-• Remo con Barra: 4 series x 8 repeticiones
-• Remo Gironda sentado: 3 series x 12 repeticiones
-• Curl de Bíceps con Barra Z: 4 series x 10 repeticiones
-• Curl Martillo con Mancuernas: 3 series x 12 repeticiones
-
-Día 3 - Piernas y Hombros:
-• Sentadilla Libre: 4 series x 8 repeticiones
-• Prensa 45°: 4 series x 12 repeticiones
-• Sillón de Cuádriceps: 3 series x 15 repeticiones
-• Press Militar con Mancuernas: 4 series x 10 repeticiones
-• Vuelos Laterales: 4 series x 15 repeticiones
-• Abdominales en polea: 3 series x 20 repeticiones
-
-Notas del Profesor:
-- Calentamiento previo articular de 10 minutos.
-- Descanso de 90 segundos entre series pesadas y 60 segundos en aislamiento.
-- Hidratación constante durante el entrenamiento.',
-CURRENT_TIMESTAMP
-FROM "E22".usuarios u
-CROSS JOIN "E22".usuarios p
-WHERE u.dni = '22222222' AND p.dni = '11111111'
-LIMIT 1;
+(
+  'precios',
+  '{"cuota_mensual":25000,"pase_diario":3500,"pase_semanal":12000,"matricula":0,"descripcion":"Acceso total a sala de musculación, seguimiento de sobrecarga progresiva y prescripción de rutina personalizada por la app."}'::jsonb
+),
+(
+  'horarios',
+  '[{"dia":"Lunes a Viernes","apertura":"07:00","cierre":"22:00","turnos":"Musculación continua libre. Clases de Funcional & Core: 08:00, 15:00 y 19:30."},{"dia":"Sábados","apertura":"09:00","cierre":"14:00","turnos":"Open Gym & Acondicionamiento físico general."},{"dia":"Domingos y Feriados","apertura":"Cerrado","cierre":"","turnos":"Descanso y recuperación activa recomendada."}]'::jsonb
+),
+(
+  'datos_bancarios',
+  '{"alias":"E22.GYM.FIT","cbu":"0000003100045892019482","titular":"E22 GYM SRL","banco":"Banco Macro","instrucciones":"Una vez realizada la transferencia, sube o notifica tu comprobante aquí para que el profesor valide y renueve tu membresía."}'::jsonb
+)
+ON CONFLICT (clave) DO NOTHING;

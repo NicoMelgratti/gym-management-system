@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, calcularEstadoPago, diasRestantes } from '@/lib/db';
+import { query, diasRestantes, estadoCuota } from '@/lib/db';
 
 export async function GET(request) {
   try {
@@ -7,14 +7,13 @@ export async function GET(request) {
     const search = searchParams.get('search') || searchParams.get('dni') || '';
 
     let sql = `
-      SELECT u.id, u.dni, u.nombre, u.apellido, u.email, u.telefono, u.rol_id, 
-             r.nombre as rol_nombre, u.vencimiento_cuota, u.estado_pago,
+      SELECT u.id, u.dni, u.nombre, u.apellido, u.email, u.telefono, u.rol, 
+             u.vencimiento_cuota, u.estado_pago, u.habilitado,
              u.alergias, u.patologias, u.dias_asistencia, u.primer_pago_realizado,
              (SELECT titulo FROM e22.rutinas WHERE usuario_id = u.id ORDER BY id DESC LIMIT 1) as rutina_titulo,
              (SELECT id FROM e22.rutinas WHERE usuario_id = u.id ORDER BY id DESC LIMIT 1) as rutina_id
       FROM e22.usuarios u
-      JOIN e22.roles r ON u.rol_id = r.id
-      WHERE r.nombre = 'alumno'
+      WHERE u.rol = 'usuario'
     `;
     const params = [];
 
@@ -28,10 +27,8 @@ export async function GET(request) {
     const result = await query(sql, params);
 
     const alumnos = (result.rows || []).map((alumno) => {
-      const estadoCalculado = alumno.vencimiento_cuota
-        ? calcularEstadoPago(alumno.vencimiento_cuota)
-        : 'rojo';
-      const dias = diasRestantes(alumno.vencimiento_cuota);
+      const estadoCalculado = estadoCuota(alumno.vencimiento_cuota, alumno.habilitado);
+      const dias = alumno.vencimiento_cuota ? diasRestantes(alumno.vencimiento_cuota) : 0;
 
       return {
         ...alumno,
