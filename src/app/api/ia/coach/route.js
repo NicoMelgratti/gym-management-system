@@ -40,7 +40,7 @@ export async function POST(request) {
       if (noTieneDias) {
         try {
           const rutinaRes = await query(
-            `SELECT titulo, detalles FROM e22.rutinas WHERE usuario_id = $1 ORDER BY id DESC LIMIT 1;`,
+            `SELECT titulo, detalles FROM e22.rutinas WHERE usuario_id = $1 ORDER BY es_activa DESC, id DESC LIMIT 1;`,
             [usuario_id]
           );
           if (rutinaRes.rows.length > 0) {

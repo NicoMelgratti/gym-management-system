@@ -33,15 +33,13 @@ export async function GET(request, { params }) {
     socio.dias_restantes = socio.vencimiento_cuota ? diasRestantes(socio.vencimiento_cuota) : 0;
     socio.estado_pago = estadoCuota(socio.vencimiento_cuota, socio.habilitado);
 
-    // Rutina asignada
+    // Rutinas asignadas (profesor y alumno)
     const rutinaRes = await query(
-      `SELECT r.id, r.usuario_id, r.profesor_id, r.titulo, r.detalles, r.fecha_creacion, r.fecha_actualizacion,
-              p.nombre as profesor_nombre, p.apellido as profesor_apellido
+      `SELECT r.*, p.nombre as profesor_nombre, p.apellido as profesor_apellido
        FROM e22.rutinas r
        LEFT JOIN e22.usuarios p ON r.profesor_id = p.id
        WHERE r.usuario_id = $1
-       ORDER BY r.id DESC
-       LIMIT 1;`,
+       ORDER BY r.es_activa DESC, r.id DESC;`,
       [socioId]
     );
 
@@ -63,19 +61,42 @@ export async function GET(request, { params }) {
       [socioId]
     );
 
-    let rutinaFinal = null;
-    if (rutinaRes.rows.length > 0) {
-      const rawRutina = rutinaRes.rows[0];
-      rutinaFinal = {
-        ...rawRutina,
-        planilla: parsePlanillaData(rawRutina.detalles, rawRutina.titulo),
+    let rutinaProfesor = null;
+    let rutinaAlumno = null;
+    let rutinaActiva = null;
+
+    for (const r of rutinaRes.rows) {
+      const parsedPlanilla = parsePlanillaData(r.detalles, r.titulo);
+      const obj = {
+        ...r,
+        planilla: parsedPlanilla,
       };
+
+      if (r.origen === 'alumno') {
+        if (!rutinaAlumno) rutinaAlumno = obj;
+      } else {
+        if (!rutinaProfesor) rutinaProfesor = obj;
+      }
+
+      if (r.es_activa && !rutinaActiva) {
+        rutinaActiva = obj;
+      }
     }
+
+    if (!rutinaActiva) {
+      rutinaActiva = rutinaProfesor || rutinaAlumno || null;
+    }
+
+    const activaTipo = rutinaActiva ? (rutinaActiva.origen === 'alumno' ? 'alumno' : 'profesor') : null;
 
     return NextResponse.json({
       ok: true,
       socio,
-      rutina: rutinaFinal,
+      rutina: rutinaActiva,
+      rutina_activa: rutinaActiva,
+      rutina_profesor: rutinaProfesor,
+      rutina_alumno: rutinaAlumno,
+      activa: activaTipo,
       registros_peso: pesoRes.rows,
       pagos: pagosRes.rows,
     });

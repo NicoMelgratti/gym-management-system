@@ -28,11 +28,29 @@ export function getPool() {
   return pool;
 }
 
+let schemaInitialized = false;
+
+export async function ensureRutinasColumns() {
+  if (schemaInitialized) return;
+  try {
+    const currentPool = getPool();
+    await currentPool.query(`
+      ALTER TABLE e22.rutinas ADD COLUMN IF NOT EXISTS origen VARCHAR(20) DEFAULT 'profesor';
+      ALTER TABLE e22.rutinas ADD COLUMN IF NOT EXISTS es_activa BOOLEAN DEFAULT true;
+    `);
+    schemaInitialized = true;
+  } catch (err) {
+    // Si la tabla aún no existe o ya tiene las columnas
+    schemaInitialized = true;
+  }
+}
+
 /**
  * Consulta SQL directa a PostgreSQL en esquema e22
  */
 export async function query(text, params = []) {
   try {
+    await ensureRutinasColumns();
     const currentPool = getPool();
     const res = await currentPool.query(text, params);
     return res;

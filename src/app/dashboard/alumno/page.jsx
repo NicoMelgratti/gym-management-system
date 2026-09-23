@@ -273,10 +273,12 @@ export default function AlumnoDashboardPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase">
-                    {rutinaData?.titulo || 'Plan de Rutina (Lunes a Sábado)'}
+                    {rutinaData?.titulo || 'Plan de Entrenamiento E22'}
                   </h3>
                   <p className="text-[10px] text-zinc-500 font-mono">
-                    Profesor: {rutinaData?.profesor_nombre || 'Staff Entrenadores E22'}
+                    {rutinaData?.origen === 'alumno'
+                      ? 'Rutina Personal (Autoría Propia)'
+                      : `Profesor: ${rutinaData?.profesor_nombre || 'Staff Entrenadores E22'}`}
                   </p>
                 </div>
               </div>
@@ -294,7 +296,7 @@ export default function AlumnoDashboardPage() {
               <div className="space-y-3">
                 <div className="p-3.5 bg-e22-bg border border-e22-border rounded-xl space-y-2">
                   <span className="text-[10px] font-mono tracking-wider text-emerald-400 font-bold uppercase block">
-                    • Planilla Oficial Activa
+                    • {rutinaData.origen === 'alumno' ? 'Mi Rutina Personal (Activa)' : 'Planilla del Profesor (Activa)'}
                   </span>
                   <p className="text-xs font-bold text-white leading-snug">
                     {rutinaData.planilla?.objetivo || rutinaData.titulo}
@@ -335,6 +337,15 @@ export default function AlumnoDashboardPage() {
                     ? 'Tu profesor de E22 está armando tu rutina personalizada en el Routine Studio.'
                     : 'Una vez validado tu pago, el profesor te asignará la rutina correspondiente.'}
                 </p>
+                <div className="pt-2">
+                  <Link
+                    href="/dashboard/alumno/rutina"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-bold transition font-mono"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Cargar Mi Rutina con IA &rarr;</span>
+                  </Link>
+                </div>
               </div>
             )}
           </div>

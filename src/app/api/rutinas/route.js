@@ -18,8 +18,7 @@ export async function GET(request) {
        FROM e22.rutinas r
        LEFT JOIN e22.usuarios p ON r.profesor_id = p.id
        WHERE r.usuario_id = $1
-       ORDER BY r.id DESC
-       LIMIT 1;`,
+       ORDER BY r.es_activa DESC, r.id DESC;`,
       [usuario_id]
     );
 
@@ -27,18 +26,49 @@ export async function GET(request) {
       return NextResponse.json({
         ok: true,
         rutina: null,
+        rutina_activa: null,
+        rutina_profesor: null,
+        rutina_alumno: null,
+        activa: null,
       });
     }
 
-    const rutina = res.rows[0];
-    const planillaParsed = parsePlanillaData(rutina.detalles, rutina.titulo);
+    let rutinaProfesor = null;
+    let rutinaAlumno = null;
+    let rutinaActiva = null;
+
+    for (const r of res.rows) {
+      const parsedPlanilla = parsePlanillaData(r.detalles, r.titulo);
+      const obj = {
+        ...r,
+        planilla: parsedPlanilla,
+      };
+
+      if (r.origen === 'alumno') {
+        if (!rutinaAlumno) rutinaAlumno = obj;
+      } else {
+        if (!rutinaProfesor) rutinaProfesor = obj;
+      }
+
+      if (r.es_activa && !rutinaActiva) {
+        rutinaActiva = obj;
+      }
+    }
+
+    // Si ninguna está marcada como activa, tomar la primera
+    if (!rutinaActiva) {
+      rutinaActiva = rutinaProfesor || rutinaAlumno || res.rows[0];
+    }
+
+    const activaTipo = rutinaActiva?.origen === 'alumno' ? 'alumno' : 'profesor';
 
     return NextResponse.json({
       ok: true,
-      rutina: {
-        ...rutina,
-        planilla: planillaParsed,
-      },
+      rutina: rutinaActiva,
+      rutina_activa: rutinaActiva,
+      rutina_profesor: rutinaProfesor,
+      rutina_alumno: rutinaAlumno,
+      activa: activaTipo,
     });
   } catch (error) {
     console.error('Error en GET /api/rutinas:', error);
@@ -52,9 +82,11 @@ export async function POST(request) {
     const {
       usuario_id,
       profesor_id,
+      origen = 'profesor', // 'profesor' | 'alumno'
       titulo,
       detalles,
-      planilla, // Puede venir la planilla como objeto completo
+      planilla,
+      hacer_activa = true,
     } = body;
 
     if (!usuario_id) {
@@ -64,34 +96,31 @@ export async function POST(request) {
       );
     }
 
-    // Resolver profesor id real si se pasa o buscar el profesor
+    // Resolver profesor id real si es de origen profesor
     let validProfesorId = null;
-    if (profesor_id) {
-      const pCheck = await query(`SELECT id FROM e22.usuarios WHERE id = $1;`, [profesor_id]);
-      if (pCheck.rows.length > 0) validProfesorId = pCheck.rows[0].id;
-    }
-    if (!validProfesorId) {
-      const defProf = await query(`SELECT id FROM e22.usuarios WHERE rol = 'profesor' LIMIT 1;`);
-      if (defProf.rows.length > 0) validProfesorId = defProf.rows[0].id;
+    if (origen === 'profesor') {
+      if (profesor_id) {
+        const pCheck = await query(`SELECT id FROM e22.usuarios WHERE id = $1;`, [profesor_id]);
+        if (pCheck.rows.length > 0) validProfesorId = pCheck.rows[0].id;
+      }
+      if (!validProfesorId) {
+        const defProf = await query(`SELECT id FROM e22.usuarios WHERE rol = 'profesor' LIMIT 1;`);
+        if (defProf.rows.length > 0) validProfesorId = defProf.rows[0].id;
+      }
     }
 
-    // Si viene el objeto planilla estructurado, serializarlo
+    // Serializar detalles de planilla
     let serializedDetalles = '';
-    let finalTitulo = titulo || 'Planilla Técnica E22';
+    let finalTitulo = titulo || (origen === 'alumno' ? 'Mi Rutina Personal E22' : 'Planilla Técnica E22');
 
     if (planilla && typeof planilla === 'object') {
       serializedDetalles = serializePlanillaData(planilla);
-      finalTitulo = planilla.objetivo || titulo || 'Planilla Técnica E22';
+      finalTitulo = planilla.objetivo || titulo || finalTitulo;
     } else if (typeof detalles === 'object') {
       serializedDetalles = serializePlanillaData(detalles);
-      finalTitulo = detalles.objetivo || titulo || 'Planilla Técnica E22';
+      finalTitulo = detalles.objetivo || titulo || finalTitulo;
     } else if (typeof detalles === 'string') {
-      // Verificar si es string JSON
-      if (detalles.trim().startsWith('{')) {
-        serializedDetalles = detalles.trim();
-      } else {
-        serializedDetalles = detalles;
-      }
+      serializedDetalles = detalles.trim();
     }
 
     if (!serializedDetalles) {
@@ -101,10 +130,10 @@ export async function POST(request) {
       );
     }
 
-    // Verificar si ya existe rutina para el usuario
+    // Regla: Solo puede existir 1 rutina de cada origen por alumno
     const check = await query(
-      `SELECT id, detalles FROM e22.rutinas WHERE usuario_id = $1 ORDER BY id DESC LIMIT 1;`,
-      [usuario_id]
+      `SELECT id FROM e22.rutinas WHERE usuario_id = $1 AND (origen = $2 OR (origen IS NULL AND $2 = 'profesor')) ORDER BY id DESC LIMIT 1;`,
+      [usuario_id, origen]
     );
 
     let saved;
@@ -112,27 +141,36 @@ export async function POST(request) {
       const rutinaId = check.rows[0].id;
       const updateRes = await query(
         `UPDATE e22.rutinas
-         SET titulo = $1, detalles = $2, profesor_id = $3, fecha_actualizacion = CURRENT_TIMESTAMP
-         WHERE id = $4
+         SET titulo = $1, detalles = $2, profesor_id = $3, origen = $4, fecha_actualizacion = CURRENT_TIMESTAMP
+         WHERE id = $5
          RETURNING *;`,
-        [finalTitulo, serializedDetalles, validProfesorId, rutinaId]
+        [finalTitulo, serializedDetalles, validProfesorId, origen, rutinaId]
       );
       saved = updateRes.rows[0];
     } else {
       const insertRes = await query(
-        `INSERT INTO e22.rutinas (usuario_id, profesor_id, titulo, detalles, fecha_creacion, fecha_actualizacion)
-         VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `INSERT INTO e22.rutinas (usuario_id, profesor_id, titulo, detalles, origen, es_activa, fecha_creacion, fecha_actualizacion)
+         VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
          RETURNING *;`,
-        [usuario_id, validProfesorId, finalTitulo, serializedDetalles]
+        [usuario_id, validProfesorId, finalTitulo, serializedDetalles, origen, hacer_activa]
       );
       saved = insertRes.rows[0];
+    }
+
+    // Si se desea marcar como activa
+    if (hacer_activa) {
+      await query(
+        `UPDATE e22.rutinas SET es_activa = (id = $1) WHERE usuario_id = $2;`,
+        [saved.id, usuario_id]
+      );
+      saved.es_activa = true;
     }
 
     const parsed = parsePlanillaData(saved.detalles, saved.titulo);
 
     return NextResponse.json({
       ok: true,
-      message: 'Planilla de entrenamiento guardada y asignada exitosamente.',
+      message: origen === 'alumno' ? 'Tu rutina personal ha sido guardada con éxito.' : 'Planilla asignada exitosamente.',
       rutina: {
         ...saved,
         planilla: parsed,
@@ -147,23 +185,29 @@ export async function POST(request) {
   }
 }
 
-// Endpoint PATCH para actualizar la asistencia (grilla de 30 días) directamente
+// Endpoint PATCH para actualizar la asistencia (grilla de 30 días)
 export async function PATCH(request) {
   try {
     const body = await request.json();
-    const { usuario_id, dia, asistio, asistenciaDias } = body;
+    const { usuario_id, rutina_id, dia, asistio, asistenciaDias } = body;
 
     if (!usuario_id) {
       return NextResponse.json({ ok: false, error: 'usuario_id es requerido.' }, { status: 400 });
     }
 
-    const check = await query(
-      `SELECT id, titulo, detalles FROM e22.rutinas WHERE usuario_id = $1 ORDER BY id DESC LIMIT 1;`,
-      [usuario_id]
-    );
+    // Si se pasa rutina_id, actualizar esa; si no, actualizar la que está activa
+    let check;
+    if (rutina_id) {
+      check = await query(`SELECT id, titulo, detalles FROM e22.rutinas WHERE id = $1 AND usuario_id = $2;`, [rutina_id, usuario_id]);
+    } else {
+      check = await query(
+        `SELECT id, titulo, detalles FROM e22.rutinas WHERE usuario_id = $1 ORDER BY es_activa DESC, id DESC LIMIT 1;`,
+        [usuario_id]
+      );
+    }
 
     if (check.rows.length === 0) {
-      return NextResponse.json({ ok: false, error: 'No hay rutina asignada para este alumno.' }, { status: 404 });
+      return NextResponse.json({ ok: false, error: 'No se encontró rutina activa para este alumno.' }, { status: 404 });
     }
 
     const rutina = check.rows[0];
@@ -203,5 +247,41 @@ export async function PATCH(request) {
   } catch (error) {
     console.error('Error en PATCH /api/rutinas:', error);
     return NextResponse.json({ ok: false, error: 'Error al actualizar asistencia.' }, { status: 500 });
+  }
+}
+
+// Endpoint DELETE para eliminar la rutina personal del alumno
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const usuario_id = searchParams.get('usuario_id');
+    const tipo = searchParams.get('tipo'); // 'alumno'
+
+    if (!usuario_id) {
+      return NextResponse.json({ ok: false, error: 'usuario_id es requerido.' }, { status: 400 });
+    }
+
+    if (tipo !== 'alumno') {
+      return NextResponse.json({ ok: false, error: 'Solo se permite eliminar la rutina personal del alumno.' }, { status: 400 });
+    }
+
+    await query(
+      `DELETE FROM e22.rutinas WHERE usuario_id = $1 AND origen = 'alumno';`,
+      [usuario_id]
+    );
+
+    // Reactivar la del profesor
+    await query(
+      `UPDATE e22.rutinas SET es_activa = true WHERE usuario_id = $1 AND (origen = 'profesor' OR origen IS NULL);`,
+      [usuario_id]
+    );
+
+    return NextResponse.json({
+      ok: true,
+      message: 'Rutina personal eliminada. Se ha restaurado la rutina del profesor.',
+    });
+  } catch (error) {
+    console.error('Error en DELETE /api/rutinas:', error);
+    return NextResponse.json({ ok: false, error: 'Error al eliminar rutina.' }, { status: 500 });
   }
 }
