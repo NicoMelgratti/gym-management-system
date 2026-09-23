@@ -240,7 +240,7 @@ export default function AccessPortalPage() {
       />
 
       {/* 2. ÁREA CENTRAL HERO + FORMULARIO */}
-      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center p-4 sm:p-8 lg:p-12 pt-24 sm:pt-28 lg:pt-32 pb-28 sm:pb-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
+      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center px-4 sm:px-8 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-28 sm:pb-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
         {/* HERO BRANDING */}
         <div id="hero-branding" className="max-w-md w-full space-y-4 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">

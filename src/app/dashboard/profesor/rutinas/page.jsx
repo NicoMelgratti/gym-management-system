@@ -376,7 +376,7 @@ export default function ProfesorRutinasPage() {
       <Sidebar user={currentUser} />
 
       {/* 2. ÁREA PRINCIPAL */}
-      <main className="flex-1 flex flex-col p-4 sm:p-8 lg:p-10 pt-24 sm:pt-28 pb-28 sm:pb-32 space-y-6 max-w-7xl w-full mx-auto min-w-0">
+      <main className="flex-1 flex flex-col px-4 sm:px-8 lg:px-10 pt-28 sm:pt-32 lg:pt-36 pb-28 sm:pb-32 space-y-6 max-w-7xl w-full mx-auto min-w-0">
         {/* Cabecera */}
         <div className="space-y-3 border-b border-e22-border/80 pb-5">
           <Link
