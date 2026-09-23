@@ -157,8 +157,8 @@ export default function Sidebar({ user }) {
         <div className="relative flex items-center justify-between px-3 sm:px-5 py-2 rounded-full bg-zinc-950/80 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/80 transition-all duration-300">
           {/* LOGO & BRAND */}
           <Link href={homeHref} className="flex items-center gap-2.5 group focus:outline-none pl-1">
-            <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-black border border-zinc-700 shrink-0 group-hover:scale-105 transition-transform">
-              <Image src="/logo.png" alt="E22 Gym" fill className="object-cover" priority />
+            <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden bg-black border border-white/20 shrink-0 group-hover:scale-105 transition-transform p-0.5 shadow-md">
+              <Image src="/logo.png" alt="E22 Gym" fill className="object-contain" priority />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs sm:text-sm font-black tracking-widest text-white block leading-none">

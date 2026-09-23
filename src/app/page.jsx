@@ -35,7 +35,6 @@ import {
   Compass,
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
-import MaskedHeading from '@/components/MaskedHeading';
 import Navigation2 from '@/components/Navigation2';
 import LiquidGlassNav from '@/components/LiquidGlassNav';
 
@@ -264,23 +263,37 @@ export default function AccessPortalPage() {
             <span>CENTRO DE ALTO RENDIMIENTO</span>
           </div>
 
-          <div className="space-y-1">
-            <MaskedHeading
-              text="E22 GYM"
-              src="/gym-hero.png"
-              fillScale={1.35}
-              parallax={32}
-              drift={16}
-              reveal="rise"
-              trigger="view"
-              weight={900}
-              textScale={0.22}
-              align="inherit"
-              className="tracking-tight leading-none drop-shadow-2xl"
-            />
-            <h1 className="text-xl sm:text-2xl font-black tracking-widest text-zinc-400 font-mono">
-              TRAINING MANAGEMENT
-            </h1>
+          {/* LOGO OFICIAL HD HERO EN LUGAR DE TEXTO TIPOGRÁFICO */}
+          <div className="flex flex-col items-center xl:items-start gap-4 pt-1">
+            <div className="relative group cursor-pointer">
+              {/* Resplandor ambiental de alta fidelidad */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-emerald-500/20 via-white/10 to-emerald-500/20 rounded-[32px] blur-2xl opacity-60 group-hover:opacity-90 transition duration-700 pointer-events-none" />
+
+              {/* Marco del Logotipo Oficial en HD */}
+              <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-[28px] overflow-hidden bg-black border border-white/20 shadow-2xl p-2.5 transition-all duration-500 group-hover:scale-[1.03] group-hover:border-white/50">
+                <Image
+                  src="/logo.png"
+                  alt="E22 Gym Logotipo Oficial HD"
+                  fill
+                  className="object-contain p-2"
+                  priority
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1 text-center xl:text-left">
+              <div className="flex items-center justify-center xl:justify-start gap-2">
+                <span className="text-2xl sm:text-3xl font-black tracking-widest text-white uppercase font-sans">
+                  E22 GYM
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/60">
+                  SEDE SANTA FE
+                </span>
+              </div>
+              <h1 className="text-base sm:text-lg font-black tracking-[0.25em] text-zinc-400 font-mono">
+                TRAINING MANAGEMENT
+              </h1>
+            </div>
           </div>
 
           <p className="text-sm text-zinc-400 leading-relaxed font-sans">
@@ -936,8 +949,8 @@ export default function AccessPortalPage() {
         <footer className="w-full border-t border-zinc-900 bg-black/60 py-12 px-4 sm:px-8 pb-32 sm:pb-24 text-center text-xs text-zinc-500 font-mono">
           <div className="max-w-4xl mx-auto space-y-4">
             <div className="flex items-center justify-center gap-2">
-              <div className="relative w-6 h-6 rounded-lg overflow-hidden border border-zinc-800 bg-black">
-                <Image src="/logo.png" alt="E22 Gym" fill className="object-cover" />
+              <div className="relative w-7 h-7 rounded-xl overflow-hidden border border-white/20 bg-black p-0.5 shadow-md">
+                <Image src="/logo.png" alt="E22 Gym" fill className="object-contain" />
               </div>
               <span className="font-black text-white tracking-widest text-sm font-sans">E22 GYM</span>
             </div>

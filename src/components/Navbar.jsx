@@ -21,12 +21,12 @@ export default function Navbar({ user }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo E22 */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-black border border-slate-700 shadow-md group-hover:border-rose-500 transition">
+          <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-black border border-white/20 shadow-md group-hover:border-emerald-500 transition p-0.5">
             <Image
               src="/logo.png"
               alt="E22 Gym Logo"
               fill
-              className="object-cover"
+              className="object-contain"
               priority
             />
           </div>

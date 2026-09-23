@@ -169,8 +169,8 @@ export default function StudentDetailModal({
         {/* Encabezado del Alumno */}
         <div className="p-5 sm:p-6 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-black border border-slate-700 shrink-0">
-              <Image src="/logo.png" alt="E22 Gym" fill className="object-cover" />
+            <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-black border border-white/20 shrink-0 p-1 shadow-md">
+              <Image src="/logo.png" alt="E22 Gym" fill className="object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2">
