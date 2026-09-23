@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { analizarRutinaConIA } from '@/lib/gemini';
 
 export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { query, estadoCuota, diasRestantes } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request, { params }) {
   try {
     const resolvedParams = await params;

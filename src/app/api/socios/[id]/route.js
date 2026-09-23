@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { query, diasRestantes, estadoCuota } from '@/lib/db';
 import { parsePlanillaData } from '@/lib/rutinas';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request, { params }) {
   try {
     const resolvedParams = await params;
