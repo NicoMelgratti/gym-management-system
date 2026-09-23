@@ -17,6 +17,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Flame,
+  MapPin,
+  Users,
 } from 'lucide-react';
 
 export default function Navigation2({
@@ -132,6 +134,33 @@ export default function Navigation2({
               />
             </button>
           </div>
+
+          {/* Item 4: Quiénes Somos */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveDropdown(null);
+              const el = document.getElementById('quienes-somos');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="px-3 py-1.5 rounded-full text-zinc-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            Quiénes Somos
+          </button>
+
+          {/* Item 5: Ubicación */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveDropdown(null);
+              const el = document.getElementById('ubicacion');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-zinc-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Ubicación</span>
+          </button>
         </nav>
 
         {/* ACCIONES / BOTONES DE ACCESO (DERECHA) */}
@@ -341,6 +370,22 @@ export default function Navigation2({
                     </p>
                   </div>
                 </div>
+
+                <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-300">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Sede Oficial: <strong>Javier de la Rosa 142, Santa Fe</strong></span>
+                  </div>
+                  <a
+                    href="https://maps.app.goo.gl/RMHyKSk7tSXdnpEt6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-[10px] font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/50 transition font-mono"
+                  >
+                    <span>Ver en Google Maps</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
             )}
           </motion.div>
@@ -369,6 +414,38 @@ export default function Navigation2({
                 <div className="flex items-center gap-2.5">
                   <Clock className="w-4 h-4 text-emerald-400" />
                   <span>Ver Horarios & Clases</span>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-400" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  const el = document.getElementById('quienes-somos');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-zinc-900/70 border border-white/5 text-xs font-bold text-white hover:bg-zinc-800 transition"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4 text-emerald-400" />
+                  <span>¿Quiénes Somos?</span>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-400" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  const el = document.getElementById('ubicacion');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-zinc-900/70 border border-white/5 text-xs font-bold text-white hover:bg-zinc-800 transition"
+              >
+                <div className="flex items-center gap-2.5">
+                  <MapPin className="w-4 h-4 text-emerald-400" />
+                  <span>Ubicación (Javier de la Rosa 142)</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-zinc-400" />
               </button>

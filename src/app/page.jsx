@@ -28,6 +28,11 @@ import {
   DollarSign,
   X,
   Home,
+  MapPin,
+  ExternalLink,
+  Copy,
+  Check,
+  Compass,
 } from 'lucide-react';
 import Stepper, { Step } from '@/components/Stepper';
 import MaskedHeading from '@/components/MaskedHeading';
@@ -39,6 +44,13 @@ export default function AccessPortalPage() {
   const [activeTab, setActiveTab] = useState('signin'); // 'signin' | 'register'
   const [showHorariosModal, setShowHorariosModal] = useState(false);
   const [configuracion, setConfiguracion] = useState(null);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText('Javier de la Rosa 142, Santa Fe, Argentina');
+    setCopiedAddress(true);
+    setTimeout(() => setCopiedAddress(false), 2500);
+  };
 
   useEffect(() => {
     fetch('/api/configuracion')
@@ -63,18 +75,31 @@ export default function AccessPortalPage() {
       isActive: true,
     },
     {
+      id: 'nosotros',
+      label: 'Nosotros',
+      icon: Users,
+      onClick: () => {
+        const el = document.getElementById('quienes-somos');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      },
+      isActive: false,
+    },
+    {
+      id: 'ubicacion',
+      label: 'Ubicación',
+      icon: MapPin,
+      onClick: () => {
+        const el = document.getElementById('ubicacion');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      },
+      isActive: false,
+    },
+    {
       id: 'horarios',
       label: 'Horarios',
       icon: Clock,
       onClick: () => setShowHorariosModal(true),
       isActive: showHorariosModal,
-    },
-    {
-      id: 'tarifas',
-      label: 'Tarifas',
-      icon: DollarSign,
-      onClick: () => setShowHorariosModal(true),
-      isActive: false,
     },
     {
       id: 'ingreso',
@@ -86,17 +111,6 @@ export default function AccessPortalPage() {
         if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
       },
       isActive: activeTab === 'signin' && !showHorariosModal,
-    },
-    {
-      id: 'registro',
-      label: 'Registro',
-      icon: Sparkles,
-      onClick: () => {
-        setActiveTab('register');
-        const formEl = document.getElementById('auth-form-card');
-        if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
-      },
-      isActive: activeTab === 'register' && !showHorariosModal,
     },
   ];
 
@@ -239,8 +253,10 @@ export default function AccessPortalPage() {
         configuracion={configuracion}
       />
 
-      {/* 2. ÁREA CENTRAL HERO + FORMULARIO */}
-      <main className="flex-1 flex flex-col xl:flex-row items-center justify-center px-4 sm:px-8 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-28 sm:pb-32 gap-8 lg:gap-16 max-w-6xl w-full mx-auto overflow-y-auto">
+      {/* 2. CONTENIDO PRINCIPAL */}
+      <main className="flex-1 flex flex-col w-full">
+        {/* ÁREA HERO + FORMULARIO */}
+        <section id="inicio" className="flex flex-col xl:flex-row items-center justify-center px-4 sm:px-8 lg:px-12 pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-24 gap-8 lg:gap-16 max-w-6xl w-full mx-auto">
         {/* HERO BRANDING */}
         <div id="hero-branding" className="max-w-md w-full space-y-4 text-center xl:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-e22-surface border border-e22-border rounded-full text-xs text-zinc-400 font-mono">
@@ -693,6 +709,285 @@ export default function AccessPortalPage() {
             </div>
           )}
         </div>
+        </section>
+
+        {/* ================= 3. SECCIÓN ¿QUIÉNES SOMOS? ================= */}
+        <section id="quienes-somos" className="w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 border-t border-zinc-800/80 relative overflow-hidden bg-gradient-to-b from-transparent via-zinc-950/60 to-transparent">
+          {/* Ambient Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="max-w-4xl mx-auto space-y-10 sm:space-y-14 relative z-10">
+            {/* Header de Sección con tipografía potente inspirada en la imagen */}
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] sm:text-xs font-mono tracking-widest uppercase text-emerald-400">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>NUESTRA ESENCIA // FILOSOFÍA E22</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tight font-sans">
+                ¿QUIÉNES SOMOS?
+              </h2>
+              <div className="w-20 h-1 bg-white mx-auto rounded-full mt-2" />
+            </div>
+
+            {/* Tarjeta de Manifiesto Principal con el contenido exacto de la imagen */}
+            <div className="relative rounded-3xl bg-zinc-950/85 border border-zinc-800 p-6 sm:p-12 md:p-16 shadow-2xl backdrop-blur-2xl">
+              <div className="max-w-2xl mx-auto text-center space-y-8 sm:space-y-10">
+                <p className="text-base sm:text-xl lg:text-2xl font-medium text-zinc-100 leading-relaxed font-sans">
+                  Somos un gimnasio comprometido con tu bienestar integral, dedicados a promover una vida más saludable y activa.
+                </p>
+
+                <div className="w-16 h-px bg-zinc-800 mx-auto" />
+
+                <p className="text-base sm:text-xl lg:text-2xl font-medium text-zinc-100 leading-relaxed font-sans">
+                  Nuestro enfoque va más allá del ejercicio físico: ofrecemos un ambiente acogedor y programas diseñados para mejorar tu calidad de vida, tanto física como mental.
+                </p>
+
+                <div className="w-16 h-px bg-zinc-800 mx-auto" />
+
+                <p className="text-base sm:text-xl lg:text-2xl font-medium text-zinc-100 leading-relaxed font-sans">
+                  Vení a entrenar con nosotros y descubrí cómo alcanzar tus metas de salud y bienestar de manera sostenible y efectiva.
+                </p>
+
+                {/* Logo E22 idéntico al pie de la imagen compartida */}
+                <div className="pt-6 sm:pt-10 flex flex-col items-center justify-center gap-3">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-white/20 bg-black shadow-2xl p-2 group hover:border-white transition-all duration-300">
+                    <Image
+                      src="/logo.png"
+                      alt="E22 Gym Logo"
+                      fill
+                      className="object-contain p-2"
+                    />
+                  </div>
+                  <span className="text-[11px] font-mono tracking-widest uppercase text-zinc-400 font-bold">
+                    E22 GYM TRAINING CENTER
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('register');
+                      const formEl = document.getElementById('auth-form-card');
+                      if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-zinc-950 font-black text-xs uppercase tracking-wider transition shadow-lg hover:scale-105"
+                  >
+                    <span>Sumate al equipo</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Pilares destacados */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-700 transition space-y-2">
+                <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-emerald-400">
+                  <HeartPulse className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Bienestar Integral</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Salud, vitalidad y rendimiento en equilibrio, adaptados a tu ritmo y objetivos personales.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-700 transition space-y-2">
+                <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-white">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Física & Mental</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Un entorno estimulante donde entrenar la disciplina, liberar tensiones y potenciar tu energía diaria.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/80 hover:border-zinc-700 transition space-y-2">
+                <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-emerald-400">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wide">Progreso Sostenible</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Metodología basada en sobrecarga progresiva real, sin atajos perjudiciales, cuidando cada articulación.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 4. SECCIÓN UBICACIÓN ================= */}
+        <section id="ubicacion" className="w-full px-4 sm:px-8 lg:px-12 py-16 sm:py-24 border-t border-zinc-800/80 relative">
+          <div className="max-w-6xl mx-auto space-y-10 sm:space-y-12">
+            {/* Header de Sección */}
+            <div className="text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] sm:text-xs font-mono tracking-widest uppercase text-emerald-400">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <span>SEDE OFICIAL // SANTA FE</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight font-sans">
+                NUESTRA UBICACIÓN
+              </h2>
+              <p className="text-xs sm:text-sm text-zinc-400 font-mono">
+                Javier de la Rosa 142, Santa Fe, Argentina
+              </p>
+            </div>
+
+            {/* Grilla: Info Card + Mapa */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              {/* Tarjeta de Información y Acciones */}
+              <div className="lg:col-span-5 rounded-3xl bg-zinc-950/80 border border-zinc-800 p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-2xl backdrop-blur-xl">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-black text-white uppercase tracking-tight">
+                        Gimnasio E22
+                      </h3>
+                      <p className="text-xs text-zinc-400 font-mono">Centro de Entrenamiento</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 space-y-2">
+                    <span className="text-[10px] font-mono uppercase text-zinc-500 block font-bold">
+                      Dirección Oficial
+                    </span>
+                    <p className="text-sm font-bold text-white">
+                      Javier de la Rosa 142
+                    </p>
+                    <p className="text-xs text-zinc-400">
+                      Santa Fe, Provincia de Santa Fe, Argentina
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60">
+                      <span className="text-zinc-400">Lunes a Viernes</span>
+                      <span className="font-mono font-bold text-emerald-400">07:00 a 22:00 hs</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/40 border border-zinc-800/60">
+                      <span className="text-zinc-400">Sábados</span>
+                      <span className="font-mono font-bold text-emerald-400">09:00 a 14:00 hs</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="space-y-2.5 pt-2">
+                  <a
+                    href="https://maps.app.goo.gl/RMHyKSk7tSXdnpEt6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-black text-xs uppercase tracking-wider transition shadow-xl group"
+                  >
+                    <MapPin className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <span>Abrir en Google Maps</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-950 transition-colors" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyAddress}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-500 text-xs font-bold text-zinc-300 hover:text-white transition font-mono"
+                  >
+                    {copiedAddress ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">¡Dirección Copiada!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                        <span>Copiar Dirección</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Mapa interactivo embebido */}
+              <div className="lg:col-span-7 rounded-3xl bg-zinc-950/80 border border-zinc-800 overflow-hidden shadow-2xl relative min-h-[320px] sm:min-h-[420px] flex flex-col">
+                <div className="p-3 bg-zinc-900/90 border-b border-zinc-800 flex items-center justify-between text-xs">
+                  <span className="font-mono text-zinc-400 flex items-center gap-1.5">
+                    <Compass className="w-3.5 h-3.5 text-emerald-400" />
+                    Mapa en vivo // Santa Fe
+                  </span>
+                  <a
+                    href="https://maps.app.goo.gl/RMHyKSk7tSXdnpEt6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-mono"
+                  >
+                    <span>Cómo llegar</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </a>
+                </div>
+                <iframe
+                  title="Ubicación Gimnasio E22"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-60.672,-31.609,-60.660,-31.600&layer=mapnik&marker=-31.6046906,-60.6662281"
+                  className="w-full flex-1 min-h-[300px] border-0 grayscale contrast-125 opacity-90 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 5. FOOTER ================= */}
+        <footer className="w-full border-t border-zinc-900 bg-black/60 py-12 px-4 sm:px-8 pb-32 sm:pb-24 text-center text-xs text-zinc-500 font-mono">
+          <div className="max-w-4xl mx-auto space-y-4">
+            <div className="flex items-center justify-center gap-2">
+              <div className="relative w-6 h-6 rounded-lg overflow-hidden border border-zinc-800 bg-black">
+                <Image src="/logo.png" alt="E22 Gym" fill className="object-cover" />
+              </div>
+              <span className="font-black text-white tracking-widest text-sm font-sans">E22 GYM</span>
+            </div>
+            <p className="text-zinc-400 text-xs font-sans max-w-md mx-auto">
+              Centro de Alto Rendimiento, bienestar integral y gestión deportiva.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-sans text-zinc-400 pt-2">
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="hover:text-white transition"
+              >
+                Inicio
+              </button>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('quienes-somos');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-white transition"
+              >
+                ¿Quiénes Somos?
+              </button>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('ubicacion');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-white transition"
+              >
+                Ubicación
+              </button>
+              <span>•</span>
+              <button
+                type="button"
+                onClick={() => setShowHorariosModal(true)}
+                className="hover:text-white transition"
+              >
+                Horarios & Tarifas
+              </button>
+            </div>
+            <p className="text-[10px] text-zinc-600 pt-4">
+              © {new Date().getFullYear()} E22 GYM. Todos los derechos reservados. Javier de la Rosa 142, Santa Fe.
+            </p>
+          </div>
+        </footer>
 
         {/* Modal de Horarios & Tarifas */}
         {showHorariosModal && (
